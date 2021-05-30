@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "58194480283",
+    "project_id": "gcs-system-b5c71",
+    "storage_bucket": "gcs-system-b5c71.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58194480283:android:3ec49bc71345b1fdab8a3e",
+        "android_client_info": {
+          "package_name": "com.faraz.eshop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "58194480283-4ddr77ige38huc7rmct5dqep16caakaf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-a_Oh0LZ70JJp1E4EIGi933rxkACX5MY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "58194480283-4ddr77ige38huc7rmct5dqep16caakaf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
