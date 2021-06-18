@@ -117,7 +117,7 @@ class _SplashScreenState extends State<SplashScreen>
       child: Container(
         decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage('images/background.jpg'), fit: BoxFit.cover)),
+                image: AssetImage('assets/background.jpg'), fit: BoxFit.cover)),
         child: SafeArea(
           child: new Scaffold(
             backgroundColor: kTransparentYellow,
@@ -126,7 +126,7 @@ class _SplashScreenState extends State<SplashScreen>
                 Expanded(
                   child: Opacity(
                       opacity: opacity.value,
-                      child: new Image.asset('images/logo.png')),
+                      child: new Image.asset('assets/logo.png')),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),

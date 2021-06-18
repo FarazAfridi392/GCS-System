@@ -78,9 +78,9 @@ class _ShopPageState extends State<ShopPage>
           top: height / 6.2,
           child: CircleAvatar(
             backgroundColor: kYellow,
-            radius: 52,
+            radius: 48,
             child: CircleAvatar(
-              radius: 50,
+              radius: 46,
               backgroundImage: NetworkImage(
                 EcommerceApp.sharedPreferences
                     .getString(EcommerceApp.userAvatarUrl),
