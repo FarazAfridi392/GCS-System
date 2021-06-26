@@ -26,6 +26,7 @@ dependencies:
   rubber: 0.4.0
   flutter_svg: 0.18.0
   sizer: ^2.0.13
+  google_sign_in: ^5.0.4
 
 
 
