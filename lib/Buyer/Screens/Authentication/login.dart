@@ -1,15 +1,13 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_shop/Buyer/Screens/Authentication/register.dart';
-
-import 'package:e_shop/Buyer/Widgets/customTextField.dart';
+import 'package:e_shop/Buyer/Screens/shop/storehome.dart';
 import 'package:e_shop/Buyer/DialogBox/errorDialog.dart';
 import 'package:e_shop/Buyer/DialogBox/loadingDialog.dart';
 import 'package:e_shop/Buyer/Screens/intro_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:e_shop/config.dart';
 
 import '../../../app_properties.dart';
@@ -26,6 +24,44 @@ class _LoginState extends State<Login> {
 
   User firebaseUser;
   FirebaseAuth _auth = FirebaseAuth.instance;
+  final googleSignin = GoogleSignIn();
+  GoogleSignInAccount _user;
+  GoogleSignInAccount get user => _user;
+
+  Future googelSignin() async {
+    final googleUser = await googleSignin.signIn();
+    if (googleUser == null) return;
+    _user = googleUser;
+
+    final googleAuth = await googleUser.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    await FirebaseAuth.instance.signInWithCredential(credential);
+
+    final snapShot = FirebaseAuth.instance;
+    await EcommerceApp.sharedPreferences
+        .setString(EcommerceApp.userEmail, _user.email);
+    await EcommerceApp.sharedPreferences
+        .setString(EcommerceApp.userName, _user.displayName);
+    await EcommerceApp.sharedPreferences
+        .setString(EcommerceApp.userAvatarUrl, _user.photoUrl);
+    await EcommerceApp.sharedPreferences
+        .setBool(EcommerceApp.boolSeller, false);
+
+    if (snapShot.currentUser == null) {
+      return;
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => StoreHome(),
+        ),
+      );
+    }
+  }
 
   void loginUser() async {
     showDialog(
@@ -84,8 +120,8 @@ class _LoginState extends State<Login> {
             EcommerceApp.userAvatarUrl,
             dataSnapshot[EcommerceApp.userAvatarUrl]);
 
-        await EcommerceApp.sharedPreferences.setBool(EcommerceApp.boolSeller,
-            dataSnapshot[EcommerceApp.boolSeller]);
+        await EcommerceApp.sharedPreferences.setBool(
+            EcommerceApp.boolSeller, dataSnapshot[EcommerceApp.boolSeller]);
       },
     );
   }
@@ -173,7 +209,9 @@ class _LoginState extends State<Login> {
           children: <Widget>[
             IconButton(
               icon: Image.asset("assets/google.png"),
-              onPressed: () {},
+              onPressed: () {
+                googelSignin();
+              },
               color: Colors.white,
             ),
             IconButton(
