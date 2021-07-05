@@ -26,10 +26,10 @@ class _RegisterState extends State<Register> {
   final TextEditingController _confirmPass = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   String _imageUrl = '';
-  File _imageFile;
+  PickedFile _imageFile;
 
   Future<void> _selectAndPickImage() async {
-    _imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+    _imageFile = await ImagePicker().getImage(source: ImageSource.gallery);
   }
 
   Future<void> uploadandSaveImage() async {
@@ -68,7 +68,7 @@ class _RegisterState extends State<Register> {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   void _registerUser() async {
-    FirebaseUser firebaseUser;
+    User firebaseUser;
     await _auth
         .createUserWithEmailAndPassword(
             email: _email.text.trim(), password: _pass.text.trim())
@@ -96,8 +96,8 @@ class _RegisterState extends State<Register> {
     }
   }
 
-  Future saveUserInfoToFirestore(FirebaseUser fUser) async {
-    Firestore.instance.collection("buyers").document(fUser.uid).setData(
+  Future saveUserInfoToFirestore(User fUser) async {
+    FirebaseFirestore.instance.collection("buyers").doc(fUser.uid).set(
       {
         "uid": fUser.uid,
         "email": fUser.email,
@@ -132,11 +132,11 @@ class _RegisterState extends State<Register> {
     );
 
     String _imageFilename = DateTime.now().millisecondsSinceEpoch.toString();
-    StorageReference storageReference =
+    Reference storageReference =
         FirebaseStorage.instance.ref().child(_imageFilename);
 
-    StorageUploadTask storageTask = storageReference.putFile(_imageFile);
-    StorageTaskSnapshot storageTaskSnapshot = await storageTask.onComplete;
+    UploadTask storageTask = storageReference.putFile(File(_imageFile.path));
+    TaskSnapshot storageTaskSnapshot = await storageTask;
     await storageTaskSnapshot.ref.getDownloadURL().then(
       (imageUrl) {
         _imageUrl = imageUrl;
@@ -268,7 +268,8 @@ class _RegisterState extends State<Register> {
         child: CircleAvatar(
             radius: _screenWidth * 0.15,
             backgroundColor: Colors.white,
-            backgroundImage: _imageFile == null ? null : FileImage(_imageFile),
+            backgroundImage:
+                _imageFile == null ? null : FileImage(File(_imageFile.path)),
             child: _imageFile == null
                 ? Icon(
                     Icons.add_photo_alternate,

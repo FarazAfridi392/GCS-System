@@ -24,7 +24,7 @@ class _LoginState extends State<Login> {
   final TextEditingController _email = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
-  FirebaseUser firebaseUser;
+  User firebaseUser;
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   void loginUser() async {
@@ -71,21 +71,21 @@ class _LoginState extends State<Login> {
     }
   }
 
-  Future readData(FirebaseUser fUser) async {
-    Firestore.instance.collection('buyers').document(fUser.uid).get().then(
+  Future readData(User fUser) async {
+    FirebaseFirestore.instance.collection('buyers').doc(fUser.uid).get().then(
       (dataSnapshot) async {
         await EcommerceApp.sharedPreferences.setString(
-            EcommerceApp.userUID, dataSnapshot.data[EcommerceApp.userUID]);
+            EcommerceApp.userUID, dataSnapshot[EcommerceApp.userUID]);
         await EcommerceApp.sharedPreferences.setString(
-            EcommerceApp.userEmail, dataSnapshot.data[EcommerceApp.userEmail]);
+            EcommerceApp.userEmail, dataSnapshot[EcommerceApp.userEmail]);
         await EcommerceApp.sharedPreferences.setString(
-            EcommerceApp.userName, dataSnapshot.data[EcommerceApp.userName]);
+            EcommerceApp.userName, dataSnapshot[EcommerceApp.userName]);
         await EcommerceApp.sharedPreferences.setString(
             EcommerceApp.userAvatarUrl,
-            dataSnapshot.data[EcommerceApp.userAvatarUrl]);
+            dataSnapshot[EcommerceApp.userAvatarUrl]);
 
         await EcommerceApp.sharedPreferences.setBool(EcommerceApp.boolSeller,
-            dataSnapshot.data[EcommerceApp.boolSeller]);
+            dataSnapshot[EcommerceApp.boolSeller]);
       },
     );
   }

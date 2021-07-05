@@ -4,6 +4,7 @@ import 'package:e_shop/Buyer/Screens/shop/storehome.dart';
 import 'package:e_shop/Seller/Screens/SellerHome/mainPage.dart';
 import 'package:e_shop/start_Page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +16,7 @@ import 'app_properties.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   EcommerceApp.auth = FirebaseAuth.instance;
   EcommerceApp.sharedPreferences = await SharedPreferences.getInstance();
 
@@ -85,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen>
     Timer(
       Duration(seconds: 5),
       () async {
-        if (await EcommerceApp.auth.currentUser() != null &&
+        if (await EcommerceApp.auth.currentUser != null &&
             EcommerceApp.sharedPreferences.getBool(EcommerceApp.boolSeller) ==
                 false) {
           print(
@@ -94,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen>
             builder: (_) => StoreHome(),
           );
           Navigator.pushReplacement(context, route);
-        } else if (await EcommerceApp.auth.currentUser() != null &&
+        } else if (await EcommerceApp.auth.currentUser != null &&
             EcommerceApp.sharedPreferences.getBool(EcommerceApp.boolSeller) ==
                 true) {
           Route route = MaterialPageRoute(

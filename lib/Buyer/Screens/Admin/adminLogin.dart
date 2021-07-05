@@ -46,15 +46,15 @@ class _AdminSignInScreenState extends State<AdminSignInScreen> {
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
   void loginAdmin() {
-    Firestore.instance.collection("admins").getDocuments().then((value) {
-      value.documents.forEach((element) {
-        if (element.data["id"] != _id.text.trim()) {
+    FirebaseFirestore.instance.collection("admins").get().then((value) {
+      value.docs.forEach((element) {
+        if (element["id"] != _id.text.trim()) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Your id is not correct"),
             ),
           );
-        } else if (element.data["password"] != _pass.text.trim()) {
+        } else if (element["password"] != _pass.text.trim()) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Your password is not correct"),
@@ -64,7 +64,7 @@ class _AdminSignInScreenState extends State<AdminSignInScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                "Welcom Dear Admin " + element.data['name'],
+                "Welcom Dear Admin " + element['name'],
               ),
             ),
           );

@@ -28,10 +28,10 @@ class _SellerRegisterState extends State<SellerRegister> {
   final TextEditingController _mobileNo = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   String _imageUrl = '';
-  File _imageFile;
+  PickedFile _imageFile;
 
   Future<void> _selectAndPickImage() async {
-    _imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+    _imageFile = await ImagePicker().getImage(source: ImageSource.gallery);
   }
 
   Future<void> uploadandSaveImage() async {
@@ -71,7 +71,7 @@ class _SellerRegisterState extends State<SellerRegister> {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
   void _registerUser() async {
-    FirebaseUser firebaseUser;
+    User firebaseUser;
     await _auth
         .createUserWithEmailAndPassword(
       email: _email.text.trim(),
@@ -102,8 +102,8 @@ class _SellerRegisterState extends State<SellerRegister> {
     }
   }
 
-  Future saveUserInfoToFirestore(FirebaseUser fUser) async {
-    Firestore.instance.collection("sellers").document(fUser.uid).setData(
+  Future saveUserInfoToFirestore(User fUser) async {
+    FirebaseFirestore.instance.collection("sellers").doc(fUser.uid).set(
       {
         "uid": fUser.uid,
         EcommerceApp.userEmail: fUser.email,
@@ -135,11 +135,11 @@ class _SellerRegisterState extends State<SellerRegister> {
     );
 
     String _imageFilename = DateTime.now().millisecondsSinceEpoch.toString();
-    StorageReference storageReference =
+    Reference storageReference =
         FirebaseStorage.instance.ref().child(_imageFilename);
 
-    StorageUploadTask storageTask = storageReference.putFile(_imageFile);
-    StorageTaskSnapshot storageTaskSnapshot = await storageTask.onComplete;
+    UploadTask storageTask = storageReference.putFile(File(_imageFile.path));
+    TaskSnapshot storageTaskSnapshot = await storageTask;
     await storageTaskSnapshot.ref.getDownloadURL().then(
       (imageUrl) {
         _imageUrl = imageUrl;
@@ -279,7 +279,8 @@ class _SellerRegisterState extends State<SellerRegister> {
         child: CircleAvatar(
             radius: _screenWidth * 0.15,
             backgroundColor: Colors.white,
-            backgroundImage: _imageFile == null ? null : FileImage(_imageFile),
+            backgroundImage:
+                _imageFile == null ? null : FileImage(File(_imageFile.path)),
             child: _imageFile == null
                 ? Icon(
                     Icons.add_photo_alternate,

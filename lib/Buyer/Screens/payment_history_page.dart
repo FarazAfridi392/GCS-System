@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'api_service.dart';
 import '../models/user.dart';
 
 class PaymentHistoryPage extends StatefulWidget {
@@ -18,17 +16,17 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
   // Integrate your API SERVICE here
   // You only need to define where are your data come from
   // and ready.
-  _getUsers() async {
-    var temp = await ApiService.getUsers(nrUsers: 5);
-    setState(() {
-      users = temp;
-    });
-  }
+  // _getUsers() async {
+  //   var temp = await ApiService.getUsers(nrUsers: 5);
+  //   setState(() {
+  //     users = temp;
+  //   });
+  // }
 
   @override
   void initState() {
     // TODO: implement initState
-    _getUsers();
+    // _getUsers();
     super.initState();
   }
 

@@ -4,8 +4,6 @@ import 'package:e_shop/Buyer/Screens/payment_history_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import '../api_service.dart';
 import '../../../app_properties.dart';
 
 class WalletPage extends StatefulWidget {
@@ -19,19 +17,19 @@ class _WalletPageState extends State<WalletPage> with TickerProviderStateMixin {
 
   List<User> users = [];
 
-  getUsers() async {
-    var temp = await ApiService.getUsers(nrUsers: 5);
-    setState(() {
-      users = temp;
-    });
-  }
+  // getUsers() async {
+  //   var temp = await ApiService.getUsers(nrUsers: 5);
+  //   setState(() {
+  //     users = temp;
+  //   });
+  // }
 
   @override
   void initState() {
     animController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     openOptions = Tween(begin: 0.0, end: 300.0).animate(animController);
-    getUsers();
+    // getUsers();
     super.initState();
   }
 

@@ -16,7 +16,7 @@ class UploadPage extends StatefulWidget {
 class _UploadPageState extends State<UploadPage>
     with AutomaticKeepAliveClientMixin<UploadPage> {
   bool get wantKeepAlive => true;
-  File file;
+  PickedFile file;
   TextEditingController _description = TextEditingController();
   TextEditingController _price = TextEditingController();
   TextEditingController _title = TextEditingController();
@@ -66,8 +66,8 @@ class _UploadPageState extends State<UploadPage>
 
   captureWithCamera() async {
     Navigator.pop(context);
-    File imageFile = await ImagePicker.pickImage(
-        source: ImageSource.camera, maxHeight: 680, maxWidth: 970);
+    PickedFile imageFile = await ImagePicker()
+        .getImage(source: ImageSource.camera, maxHeight: 680, maxWidth: 970);
 
     setState(() {
       file = imageFile;
@@ -76,7 +76,7 @@ class _UploadPageState extends State<UploadPage>
 
   uploadFromGallery() async {
     Navigator.pop(context);
-    File imageFile = await ImagePicker.pickImage(
+    PickedFile imageFile = await ImagePicker().getImage(
       source: ImageSource.gallery,
     );
 
@@ -225,7 +225,7 @@ class _UploadPageState extends State<UploadPage>
                 child: Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: FileImage(file),
+                      image: FileImage(File(file.path)),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -360,18 +360,18 @@ class _UploadPageState extends State<UploadPage>
   }
 
   Future<String> uploadItemImage(mFileImage) async {
-    final StorageReference storageReference =
+    final Reference storageReference =
         FirebaseStorage.instance.ref().child("items");
-    StorageUploadTask uploadTask =
+    UploadTask uploadTask =
         storageReference.child("product_$productID.jpg").putFile(mFileImage);
-    StorageTaskSnapshot snapshot = await uploadTask.onComplete;
+    TaskSnapshot snapshot = await uploadTask;
     String downloadUrl = await snapshot.ref.getDownloadURL();
     return downloadUrl;
   }
 
   saveItemInfo(String downUrl) {
-    final itemsRef = Firestore.instance.collection("items");
-    itemsRef.document(productID).setData({
+    final itemsRef = FirebaseFirestore.instance.collection("items");
+    itemsRef.doc(productID).set({
       "shortInfo": _shortInfo.text.trim(),
       "longDescription": _description.text.trim(),
       "price": int.parse(_price.text),
