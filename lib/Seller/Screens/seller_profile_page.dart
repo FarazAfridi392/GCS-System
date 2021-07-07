@@ -1,4 +1,4 @@
-import 'package:e_shop/Seller/Screens/seller_shop.dart';
+import 'package:e_shop/Seller/Screens/SellerShop/seller_shop.dart';
 import 'package:e_shop/config.dart';
 import 'package:e_shop/app_properties.dart';
 import 'package:e_shop/Buyer/Screens/faq_page.dart';
