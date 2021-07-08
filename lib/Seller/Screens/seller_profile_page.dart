@@ -1,3 +1,4 @@
+import 'package:e_shop/Seller/Screens/SellerShop/create_shop.dart';
 import 'package:e_shop/Seller/Screens/SellerShop/seller_shop.dart';
 import 'package:e_shop/config.dart';
 import 'package:e_shop/app_properties.dart';
@@ -83,7 +84,10 @@ class _SellerProfileState extends State<SellerProfile> {
                             IconButton(
                               icon: SvgPicture.asset('assets/icons/store.svg'),
                               onPressed: () => Navigator.of(context).push(
-                                  MaterialPageRoute(builder: (_) => MyShop())),
+                                MaterialPageRoute(
+                                  builder: (_) => CreateShop(),
+                                ),
+                              ),
                             ),
                             Text(
                               'My Shop',

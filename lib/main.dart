@@ -20,7 +20,7 @@ Future<void> main() async {
   await Firebase.initializeApp();
   EcommerceApp.auth = FirebaseAuth.instance;
   EcommerceApp.sharedPreferences = await SharedPreferences.getInstance();
-  runApp(AddShop());
+  runApp(MyApp());
   // runApp(MyApp());
 }
 
