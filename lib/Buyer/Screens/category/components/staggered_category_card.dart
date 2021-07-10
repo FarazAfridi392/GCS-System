@@ -15,10 +15,10 @@ class CategoryCard extends StatelessWidget {
         this.assetPath})
       :
 
-  // Each animation defined here transforms its value during the subset
-  // of the controller's duration defined by the animation's interval.
-  // For example the opacity animation transforms its value during
-  // the first 10% of the controller's duration.
+  
+  
+  
+  
 
         height = Tween<double>(begin: 150, end: 250.0).animate(
           CurvedAnimation(
@@ -46,9 +46,9 @@ class CategoryCard extends StatelessWidget {
   final Animation<double> height;
   final Animation<double> itemHeight;
 
-  // This function is called each time the controller "ticks" a new frame.
-  // When it runs, all of the animation's values will have been
-  // updated to reflect the controller's current value.
+  
+  
+  
   Widget _buildAnimation(BuildContext context, Widget child) {
     return Container(
       height: height.value,
@@ -75,7 +75,7 @@ class CategoryCard extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
-//        mainAxisSize: MainAxisSize.min,
+
             children: <Widget>[
               Container(
                 padding: EdgeInsets.only(bottom: 16.0),
@@ -142,7 +142,7 @@ class _StaggeredCardCardState extends State<StaggeredCardCard>
     try {
       await _controller.forward().orCancel;
     } on TickerCanceled {
-      // the animation got canceled, probably because we were disposed
+      
     }
   }
 
@@ -150,13 +150,13 @@ class _StaggeredCardCardState extends State<StaggeredCardCard>
     try {
       await _controller.reverse().orCancel;
     } on TickerCanceled {
-      // the animation got canceled, probably because we were disposed
+      
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var timeDilation = 10.0; // 1.0 is normal animation speed.
+    var timeDilation = 10.0; 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
