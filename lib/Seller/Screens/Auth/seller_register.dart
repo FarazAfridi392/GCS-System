@@ -239,7 +239,7 @@ class _SellerRegisterState extends State<SellerRegister> {
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: TextField(
-                        decoration: InputDecoration(hintText: "Mobile no"),
+                        decoration: InputDecoration(hintText: "Mobile No"),
                         controller: _mobileNo,
                         style: TextStyle(fontSize: 16.0),
                       ),
