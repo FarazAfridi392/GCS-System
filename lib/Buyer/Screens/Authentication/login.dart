@@ -7,6 +7,7 @@ import 'package:e_shop/Buyer/DialogBox/loadingDialog.dart';
 import 'package:e_shop/Buyer/Screens/intro_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:e_shop/config.dart';
 
@@ -27,6 +28,44 @@ class _LoginState extends State<Login> {
   final googleSignin = GoogleSignIn();
   GoogleSignInAccount _user;
   GoogleSignInAccount get user => _user;
+
+  Future facebookSignin() async {
+    await FacebookAuth.instance.login(
+      permissions: [
+        'public_profile',
+        'email',
+      ],
+    ).then((value) {
+      FacebookAuth.instance.getUserData().then((userData) async {
+        final AuthCredential facebookCredential =
+            FacebookAuthProvider.credential(value.accessToken.token);
+        final userCredential =
+            await _auth.signInWithCredential(facebookCredential);
+
+        // ignore: unawaited_futures
+        final snapShot = FirebaseAuth.instance;
+        await EcommerceApp.sharedPreferences
+        .setString(EcommerceApp.userEmail, userData['email']);
+    await EcommerceApp.sharedPreferences
+        .setString(EcommerceApp.userName, userData['name']);
+    await EcommerceApp.sharedPreferences
+        .setString(EcommerceApp.userAvatarUrl, userData['picture']['data']['url']);
+    await EcommerceApp.sharedPreferences
+        .setBool(EcommerceApp.boolSeller, false);
+
+        if (snapShot.currentUser == null) {
+          return;
+        } else {
+          // ignore: unawaited_futures
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => StoreHome()
+            ),
+          );
+        }
+      });
+    });
+  }
 
   Future googelSignin() async {
     final googleUser = await googleSignin.signIn();
@@ -216,7 +255,9 @@ class _LoginState extends State<Login> {
             ),
             IconButton(
                 icon: Image.asset("assets/facebook.png"),
-                onPressed: () {},
+                onPressed: () {
+                facebookSignin();
+              },
                 color: Colors.white),
           ],
         )
