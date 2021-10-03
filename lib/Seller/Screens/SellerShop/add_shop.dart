@@ -20,7 +20,7 @@ class _AddShopState extends State<AddShop> {
   String postalCode;
 
   void getMarkers(double lat, double long) {
-    MarkerId markerId = MarkerId(lat.toString() + long.toString());
+    var markerId = MarkerId(lat.toString() + long.toString());
 
     Marker _marker = Marker(
       markerId: markerId,
@@ -36,6 +36,7 @@ class _AddShopState extends State<AddShop> {
   }
 
   void getCurrentLocation() async {
+    // ignore: omit_local_variable_types
     Position currentPosition =
         await GeolocatorPlatform.instance.getCurrentPosition();
     setState(() {
@@ -70,13 +71,14 @@ class _AddShopState extends State<AddShop> {
                 height: 600,
                 child: GoogleMap(
                   onTap: (tapped) async {
+                    // ignore: unnecessary_new
                     final coordinates = new geoCo.Coordinates(
                         tapped.latitude, tapped.longitude);
                     var address = await geoCo.Geocoder.local
                         .findAddressesFromCoordinates(coordinates);
                     var firstAddress = address.first;
                     getMarkers(tapped.latitude, tapped.longitude);
-                    FirebaseFirestore.instance.collection("loacation").add({
+                    await FirebaseFirestore.instance.collection("loacation").add({
                       'latitude': tapped.latitude,
                       'longitude': tapped.longitude,
                       'address': firstAddress.addressLine,

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_shop/Buyer/Screens/custom_background.dart';
 import 'package:e_shop/Seller/Widgets/shop_manage_card.dart';
 import 'package:e_shop/app_properties.dart';
@@ -11,70 +12,7 @@ class MyShop extends StatelessWidget {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    Widget profileHeader = Stack(
-      children: [
-        Container(
-          height: height / 3.5,
-          color: Colors.white,
-          child: Column(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height / 4.5,
-                decoration: BoxDecoration(
-                  color: kYellow,
-                  image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: AssetImage('assets/Store.jpg'),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    AppBar(
-                      toolbarHeight:
-                          MediaQuery.of(context).padding.top + kToolbarHeight,
-                      elevation: 0,
-                      backgroundColor: Colors.transparent,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Positioned(
-          top: height / 3.4,
-          left: width / 3,
-          right: width / 3,
-          child: Text(
-            'Khan Store',
-            style: TextStyle(
-                color: Colors.black,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                fontFamily: "Montserrat",
-                fontStyle: FontStyle.italic),
-          ),
-        ),
-        Positioned(
-          right: width / 3,
-          left: width / 3,
-          top: height / 6.2,
-          child: CircleAvatar(
-            backgroundColor: kYellow,
-            radius: 48,
-            child: CircleAvatar(
-              radius: 46,
-              backgroundImage: NetworkImage(
-                EcommerceApp.sharedPreferences
-                    .getString(EcommerceApp.userAvatarUrl),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+
     Widget rowButtons = Container(
       margin: EdgeInsets.all(8),
       padding: EdgeInsets.symmetric(horizontal: 8),
@@ -163,7 +101,7 @@ class MyShop extends StatelessWidget {
 
     Widget manageShop = Expanded(
         child: Container(
-      margin: EdgeInsets.all(12),
+      margin: EdgeInsets.all(8),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(10)),
           color: Colors.white,
@@ -227,25 +165,115 @@ class MyShop extends StatelessWidget {
     ));
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-          profileHeader,
-          rowButtons,
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20, left: 16),
-              child: Text(
-                'SHOP MANAGEMENT',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: "Montserrat",
-                    fontStyle: FontStyle.italic),
-              ),
-            ),
-          ),
-          manageShop,
-        ]),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('Shop').snapshots(),
+        // ignore: missing_return
+        builder: (context, snapshot) {
+          var doc = snapshot.data.docs;
+          print(snapshot.data.docs.last.data());
+          // ignore: omit_local_variable_types
+          for (int i = 0; i < snapshot.data.docs.length; i++) {
+            print(doc[i]['shopId'].toString());
+            print(EcommerceApp.auth.currentUser.toString());
+            if (doc[i]['shopId'].toString() ==
+                EcommerceApp.auth.currentUser.uid.toString()) {
+              return SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Stack(
+                      children: [
+                        Container(
+                          height: height / 3,
+                          color: Colors.white,
+                          child: Column(
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                height:
+                                    MediaQuery.of(context).size.height / 4.5,
+                                decoration: BoxDecoration(
+                                  color: kYellow,
+                                  image: DecorationImage(
+                                    fit: BoxFit.fill,
+                                    image: AssetImage('assets/Store.jpg'),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: <Widget>[
+                                    AppBar(
+                                      toolbarHeight:
+                                          MediaQuery.of(context).padding.top +
+                                              kToolbarHeight,
+                                      elevation: 0,
+                                      backgroundColor: Colors.transparent,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          top: height / 3.4,
+                          left: width / 2.5,
+                          
+                          
+                          child: Text(
+                            doc[i]['ShopName'],
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "Montserrat",
+                                fontStyle: FontStyle.italic),
+                          ),
+                        ),
+                        Positioned(
+                          right: width / 3,
+                          left: width / 3,
+                          top: height / 6.2,
+                          child: CircleAvatar(
+                            backgroundColor: kYellow,
+                            radius: 48,
+                            child: CircleAvatar(
+                              radius: 46,
+                              backgroundImage: NetworkImage(
+                                EcommerceApp.sharedPreferences
+                                    .getString(EcommerceApp.userAvatarUrl),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    rowButtons,
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 20, left: 16),
+                        child: Text(
+                          'SHOP MANAGEMENT',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: "Montserrat",
+                              fontStyle: FontStyle.italic),
+                        ),
+                      ),
+                    ),
+                    manageShop,
+                  ],
+                ),
+              );
+            }
+          }
+          // if (snapshot.data.docs.contains() == null) {
+          //   return createShop();
+          // } else {
+          //   return MyShop();
+          // }
+        },
       ),
     );
   }

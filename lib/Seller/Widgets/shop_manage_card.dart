@@ -16,7 +16,7 @@ class ManageCard extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.all(18),
         padding: EdgeInsets.all(12),
-        height: height / 8,
+        height: height / 9,
         width: width / 3.5,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10)), color: color),
@@ -40,7 +40,7 @@ class ManageCard extends StatelessWidget {
             ),
             Text(
               text,
-              style: TextStyle(fontStyle: FontStyle.italic, fontSize: 16),
+              style: TextStyle(fontStyle: FontStyle.italic, fontSize: 10),
             )
           ],
         ),

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_shop/Seller/Screens/SellerShop/seller_shop.dart';
 import 'package:e_shop/app_properties.dart';
 import 'package:e_shop/config.dart';
 import 'package:e_shop/Buyer/Widgets/loadingWidget.dart';
@@ -19,11 +20,15 @@ class _CreateShopState extends State<CreateShop>
     with AutomaticKeepAliveClientMixin<CreateShop> {
   bool get wantKeepAlive => true;
   PickedFile file;
-  TextEditingController _description = TextEditingController();
-  TextEditingController _price = TextEditingController();
-  TextEditingController _title = TextEditingController();
-  TextEditingController _shortInfo = TextEditingController();
-  String productID = DateTime.now().millisecondsSinceEpoch.toString();
+  TextEditingController _shopName = TextEditingController();
+  TextEditingController _shopOwner = TextEditingController();
+  TextEditingController _adress = TextEditingController();
+  TextEditingController _email = TextEditingController();
+  TextEditingController _contact = TextEditingController();
+  TextEditingController _shopDescription = TextEditingController();
+
+  String shopId = EcommerceApp.auth.currentUser.uid;
+
   bool uploading = false;
 
   takeImage(con) {
@@ -68,16 +73,19 @@ class _CreateShopState extends State<CreateShop>
 
   captureWithCamera() async {
     Navigator.pop(context);
-    PickedFile imageFile = await ImagePicker()
-        .getImage(source: ImageSource.camera, maxHeight: 680, maxWidth: 970);
+    // ignore: omit_local_variable_types
+    File imageFile = (await ImagePicker().getImage(
+        source: ImageSource.camera, maxHeight: 680, maxWidth: 970)) as File;
 
     setState(() {
-      file = imageFile;
+      file = imageFile as PickedFile;
     });
   }
 
+  // ignore: always_declare_return_types
   uploadFromGallery() async {
     Navigator.pop(context);
+    // ignore: omit_local_variable_types
     PickedFile imageFile = await ImagePicker().getImage(
       source: ImageSource.gallery,
     );
@@ -87,12 +95,13 @@ class _CreateShopState extends State<CreateShop>
     });
   }
 
+  // ignore: always_declare_return_types
   createShop() {
     return Scaffold(
       appBar: AppBar(
         title: Text("Create Shop"),
         flexibleSpace: Container(
-          decoration: new BoxDecoration(color: kYellow),
+          decoration: BoxDecoration(color: kYellow),
         ),
       ),
       body: Center(
@@ -104,7 +113,7 @@ class _CreateShopState extends State<CreateShop>
   addShopScreenBody() {
     return Container(
       height: MediaQuery.of(context).size.height,
-      decoration: new BoxDecoration(color: Colors.white),
+      decoration: BoxDecoration(color: Colors.white),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -146,25 +155,16 @@ class _CreateShopState extends State<CreateShop>
   uploadFormScreen() {
     return Scaffold(
       appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: new BoxDecoration(
-            gradient: new LinearGradient(
-                colors: [Colors.pink, Colors.lightGreenAccent],
-                begin: new FractionalOffset(0.0, 0.0),
-                end: new FractionalOffset(1.0, 0.0),
-                stops: [0.0, 1.0],
-                tileMode: TileMode.clamp),
-          ),
-        ),
+        backgroundColor: kYellow,
         leading: IconButton(
           onPressed: clearFormInfo,
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Colors.white,
           ),
         ),
-        title: Text(
-          "New Product",
+        title: const Text(
+          'New Product',
           style: TextStyle(
             color: Colors.white,
             fontSize: 24,
@@ -173,11 +173,11 @@ class _CreateShopState extends State<CreateShop>
         ),
         actions: [
           TextButton(
-            onPressed: uploading ? null : () => uploadImageAndSaveItemInfo(),
-            child: Text(
+            onPressed: uploading ? null : uploadImageAndSaveItemInfo,
+            child: const Text(
               "Add",
               style: TextStyle(
-                color: Colors.pink,
+                color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -204,21 +204,21 @@ class _CreateShopState extends State<CreateShop>
               ),
             ),
           ),
-          Padding(padding: EdgeInsets.only(top: 12)),
+          const Padding(padding: EdgeInsets.only(top: 12)),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
               Icons.perm_device_information,
               color: Colors.pink,
             ),
             title: Container(
               width: 250,
               child: TextField(
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.deepPurpleAccent,
                 ),
-                controller: _shortInfo,
+                controller: _shopName,
                 decoration: InputDecoration(
-                  hintText: "Short Info",
+                  hintText: "Shop Name",
                   hintStyle: TextStyle(
                     color: Colors.deepPurpleAccent,
                   ),
@@ -241,9 +241,9 @@ class _CreateShopState extends State<CreateShop>
                 style: TextStyle(
                   color: Colors.deepPurpleAccent,
                 ),
-                controller: _title,
+                controller: _shopOwner,
                 decoration: InputDecoration(
-                  hintText: "Title",
+                  hintText: "Owner Name",
                   hintStyle: TextStyle(
                     color: Colors.deepPurpleAccent,
                   ),
@@ -266,9 +266,9 @@ class _CreateShopState extends State<CreateShop>
                 style: TextStyle(
                   color: Colors.deepPurpleAccent,
                 ),
-                controller: _description,
+                controller: _email,
                 decoration: InputDecoration(
-                  hintText: "Description",
+                  hintText: "E-mail",
                   hintStyle: TextStyle(
                     color: Colors.deepPurpleAccent,
                   ),
@@ -291,10 +291,62 @@ class _CreateShopState extends State<CreateShop>
                 style: TextStyle(
                   color: Colors.deepPurpleAccent,
                 ),
-                controller: _price,
-                keyboardType: TextInputType.number,
+                controller: _adress,
+                keyboardType: TextInputType.text,
                 decoration: InputDecoration(
-                  hintText: "Price",
+                  hintText: "Adress",
+                  hintStyle: TextStyle(
+                    color: Colors.deepPurpleAccent,
+                  ),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+          ),
+          Divider(
+            color: Colors.pink,
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.perm_device_information,
+              color: Colors.pink,
+            ),
+            title: Container(
+              width: 250,
+              child: TextField(
+                style: TextStyle(
+                  color: Colors.deepPurpleAccent,
+                ),
+                controller: _contact,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  hintText: "Contact",
+                  hintStyle: TextStyle(
+                    color: Colors.deepPurpleAccent,
+                  ),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+          ),
+          Divider(
+            color: Colors.pink,
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.perm_device_information,
+              color: Colors.pink,
+            ),
+            title: Container(
+              width: 250,
+              child: TextField(
+                style: TextStyle(
+                  color: Colors.deepPurpleAccent,
+                ),
+                controller: _shopDescription,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  hintText: "Shop Description",
                   hintStyle: TextStyle(
                     color: Colors.deepPurpleAccent,
                   ),
@@ -314,10 +366,12 @@ class _CreateShopState extends State<CreateShop>
   clearFormInfo() {
     setState(() {
       file = null;
-      _description.clear();
-      _price.clear();
-      _shortInfo.clear();
-      _title.clear();
+      _shopName.clear();
+      _shopOwner.clear();
+      _email.clear();
+      _adress.clear();
+      _contact.clear();
+      _shopDescription.clear();
     });
   }
 
@@ -333,38 +387,75 @@ class _CreateShopState extends State<CreateShop>
   Future<String> uploadItemImage(mFileImage) async {
     final Reference storageReference =
         FirebaseStorage.instance.ref().child("items");
+    // ignore: omit_local_variable_types
     UploadTask uploadTask =
-        storageReference.child("product_$productID.jpg").putFile(mFileImage);
+        // ignore: prefer_single_quotes
+        storageReference
+            .child("product_$shopId.jpg")
+            .putFile(File(mFileImage.path));
     TaskSnapshot snapshot = await uploadTask;
+    // ignore: omit_local_variable_types
     String downloadUrl = await snapshot.ref.getDownloadURL();
     return downloadUrl;
   }
 
   saveItemInfo(String downUrl) {
-    final itemsRef = FirebaseFirestore.instance.collection("items");
-    itemsRef.doc(productID).set({
-      "shortInfo": _shortInfo.text.trim(),
-      "longDescription": _description.text.trim(),
-      "price": int.parse(_price.text),
-      "publishedDate": DateTime.now(),
+    final itemsRef = FirebaseFirestore.instance.collection("Shop");
+    itemsRef.doc(shopId).set({
+      'shopId': shopId.toString(),
+      "Email": _email.text.trim(),
+      "ShopName": _shopName.text.trim(),
+      "ShopOwner": _shopOwner.text,
+      "Date Created": DateTime.now(),
       "status": "available",
       "thumbnailUrl": downUrl,
-      "title": _title.text.trim(),
+      "Address": _adress.text.trim(),
+      "Contact": _contact.text.trim(),
+      "Shop Description": _shopDescription.text.trim(),
     });
 
     setState(() {
       file = null;
       uploading = false;
-      productID = DateTime.now().millisecondsSinceEpoch.toString();
-      _description.clear();
-      _title.clear();
-      _shortInfo.clear();
-      _price.clear();
+      shopId = DateTime.now().millisecondsSinceEpoch.toString();
+      _shopName.clear();
+      _adress.clear();
+      _email.clear();
+      _shopOwner.clear();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return file == null ? createShop() : uploadFormScreen();
+    print(FirebaseFirestore.instance.collection("Shop").doc(shopId).toString());
+    print(shopId);
+
+    // return retrunType == null ? createShop() : MyShop();
+    return Scaffold(
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('Shop').snapshots(),
+        // ignore: missing_return
+        builder: (context, snapshot) {
+          var doc = snapshot.data.docs;
+          print(snapshot.data.docs.last.data());
+          // ignore: omit_local_variable_types
+          for (int i = 0; i < snapshot.data.docs.length; i++) {
+            print(doc[i]['shopId'].toString());
+            print(EcommerceApp.auth.currentUser.toString());
+            if (doc[i]['shopId'].toString() ==
+                EcommerceApp.auth.currentUser.uid.toString()) {
+              return MyShop();
+            } else {
+              return file == null ? createShop() : uploadFormScreen();
+            }
+          }
+          // if (snapshot.data.docs.contains() == null) {
+          //   return createShop();
+          // } else {
+          //   return MyShop();
+          // }
+        },
+      ),
+    );
   }
 }

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:e_shop/Buyer/Counters/itemQuantity.dart';
 import 'package:e_shop/Buyer/Screens/shop/storehome.dart';
 import 'package:e_shop/Seller/Screens/SellerHome/mainPage.dart';
-import 'package:e_shop/Seller/Screens/SellerShop/addShop.dart';
+import 'package:e_shop/Seller/Screens/SellerShop/add_shop.dart';
 import 'package:e_shop/start_Page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
