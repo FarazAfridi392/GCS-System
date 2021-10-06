@@ -32,6 +32,14 @@ dependencies:
   geolocator: ^7.2.0+1
   geocoder: ^0.2.1
   flutter_facebook_auth: ^3.5.0
+  enum_to_string: ^1.0.14
+  permission_handler: ^8.1.6
+  flutter_tags: ^0.4.9+1
+  future_progress_dialog: ^0.1.1
+  logger: ^1.1.0
+  string_validator: ^0.3.0
+  swipedetector: ^1.2.0
+  pinch_zoom_image_updated: ^0.2.6
 
 
 dev_dependencies:
@@ -48,11 +56,20 @@ flutter:
   - family: NunitoSans
     fonts:
     - asset: fonts/NunitoSans-Regular.ttf
+  - family: Muli
+    fonts:
+    - asset: assets/fonts/muli/Muli.ttf
+    - asset: assets/fonts/muli/Muli-Bold.ttf
+      weight: 700
+    - asset: assets/fonts/muli/Muli-Light.ttf
+      weight: 300
   
 
   assets:
   - assets/
   - assets/icons/
+  - assets/images/
+    
 
 
 

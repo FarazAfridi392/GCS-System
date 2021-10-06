@@ -93,6 +93,7 @@ class _SellerLoginState extends State<SellerLogin> {
   }
 
   Future readData(User fUser) async {
+    // ignore: unawaited_futures
     FirebaseFirestore.instance.collection('sellers').doc(fUser.uid).get().then(
       (dataSnapshot) async {
         await EcommerceApp.sharedPreferences
@@ -104,6 +105,9 @@ class _SellerLoginState extends State<SellerLogin> {
         await EcommerceApp.sharedPreferences.setString(
             EcommerceApp.userAvatarUrl,
             dataSnapshot[EcommerceApp.userAvatarUrl]);
+            await EcommerceApp.sharedPreferences.setString(
+            EcommerceApp.auth.currentUser.uid,
+            dataSnapshot[EcommerceApp.userUID]);
 
         await EcommerceApp.sharedPreferences.setBool(
             EcommerceApp.boolSeller, dataSnapshot[EcommerceApp.boolSeller]);

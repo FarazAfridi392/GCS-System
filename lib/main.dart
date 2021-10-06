@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
         title: 'e-Shop',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primaryColor: Colors.green,
+          primaryColor: kYellow,
         ),
         home: SplashScreen(),
       ),

@@ -1,3 +1,5 @@
+import 'package:e_shop/change_display_name/change_display_name_screen.dart';
+import 'package:e_shop/change_display_picture/change_display_picture_screen.dart';
 import 'package:e_shop/config.dart';
 
 import 'package:e_shop/Buyer/Screens/settings/settings_page.dart';
@@ -26,20 +28,43 @@ class _ProfilePageState extends State<ProfilePage> {
                 EdgeInsets.only(left: 16.0, right: 16.0, top: kToolbarHeight),
             child: Column(
               children: <Widget>[
-                CircleAvatar(
-                  maxRadius: 48,
-                  backgroundImage: NetworkImage(
-                    EcommerceApp.sharedPreferences
-                        .getString(EcommerceApp.userAvatarUrl),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChangeDisplayPictureScreen(),
+                        ));
+                  },
+                  child: CircleAvatar(
+                    maxRadius: 50,
+                    backgroundImage: NetworkImage(
+                        EcommerceApp.sharedPreferences.getString(EcommerceApp.userAvatarUrl)),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    EcommerceApp.sharedPreferences
-                        .getString(EcommerceApp.userName),
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          EcommerceApp.auth.currentUser.displayName,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ChangeDisplayNameScreen(),
+                                  ));
+                            },
+                            icon: Icon(
+                              Icons.edit,
+                              size: 25,
+                            ))
+                      ]),
                 ),
                 Container(
                   margin: EdgeInsets.symmetric(vertical: 16.0),

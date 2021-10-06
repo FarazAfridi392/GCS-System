@@ -4,6 +4,7 @@ import 'package:e_shop/Buyer/Screens/components/tab_view.dart';
 import 'package:e_shop/Buyer/Screens/shop/check_out_page.dart';
 import 'package:e_shop/Buyer/models/product.dart';
 import 'package:e_shop/Buyer/Screens/Chat/chatPage.dart';
+import 'package:e_shop/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -209,33 +210,34 @@ class _StoreHomeState extends State<StoreHome>
           controller: bottomTabController,
           physics: NeverScrollableScrollPhysics(),
           children: <Widget>[
-            SafeArea(
-              child: NestedScrollView(
-                headerSliverBuilder:
-                    (BuildContext context, bool innerBoxIsScrolled) {
-                  // These are the slivers that show up in the "outer" scroll view.
-                  return <Widget>[
-                    SliverToBoxAdapter(
-                      child: appBar,
-                    ),
-                    SliverToBoxAdapter(
-                      child: topHeader,
-                    ),
-                    SliverToBoxAdapter(
-                      child: ProductList(
-                        products: products,
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: tabBar,
-                    )
-                  ];
-                },
-                body: TabView(
-                  tabController: tabController,
-                ),
-              ),
-            ),
+            // SafeArea(
+            //   child: NestedScrollView(
+            //     headerSliverBuilder:
+            //         (BuildContext context, bool innerBoxIsScrolled) {
+            //       // These are the slivers that show up in the "outer" scroll view.
+            //       return <Widget>[
+            //         SliverToBoxAdapter(
+            //           child: appBar,
+            //         ),
+            //         SliverToBoxAdapter(
+            //           child: topHeader,
+            //         ),
+            //         SliverToBoxAdapter(
+            //           child: ProductList(
+            //             products: products,
+            //           ),
+            //         ),
+            //         SliverToBoxAdapter(
+            //           child: tabBar,
+            //         )
+            //       ];
+            //     },
+            //     body: TabView(
+            //       tabController: tabController,
+            //     ),
+            //   ),
+            // ),
+            HomeScreen(),
             CategoryListPage(),
             ChatPage(),
             ProfilePage()

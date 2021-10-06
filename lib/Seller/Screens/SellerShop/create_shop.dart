@@ -26,6 +26,7 @@ class _CreateShopState extends State<CreateShop>
   TextEditingController _email = TextEditingController();
   TextEditingController _contact = TextEditingController();
   TextEditingController _shopDescription = TextEditingController();
+  bool shopCreated = false;
 
   String shopId = EcommerceApp.auth.currentUser.uid;
 
@@ -441,14 +442,20 @@ class _CreateShopState extends State<CreateShop>
           // ignore: omit_local_variable_types
           for (int i = 0; i < snapshot.data.docs.length; i++) {
             print(doc[i]['shopId'].toString());
-            print(EcommerceApp.auth.currentUser.toString());
+            print(doc[i]['Address'].toString());
+            print(
+                EcommerceApp.sharedPreferences.getString(EcommerceApp.userUID));
             if (doc[i]['shopId'].toString() ==
                 EcommerceApp.auth.currentUser.uid.toString()) {
+              shopCreated = true;
               return MyShop();
-            } else {
-              return file == null ? createShop() : uploadFormScreen();
             }
           }
+          if (shopCreated == false) {
+            print(shopCreated);
+            return file == null ? createShop() : uploadFormScreen();
+          }
+
           // if (snapshot.data.docs.contains() == null) {
           //   return createShop();
           // } else {

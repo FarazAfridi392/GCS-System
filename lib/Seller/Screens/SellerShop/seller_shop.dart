@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_shop/Buyer/Screens/custom_background.dart';
+import 'package:e_shop/Seller/Screens/edit_product/edit_product_screen.dart';
 import 'package:e_shop/Seller/Widgets/shop_manage_card.dart';
+import 'package:e_shop/Seller/my_products/my_products_screen.dart';
 import 'package:e_shop/app_properties.dart';
 import 'package:e_shop/config.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -51,7 +54,13 @@ class MyShop extends StatelessWidget {
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => EditProductScreen(),
+                  ),
+                );
+              },
               child: Container(
                 padding: EdgeInsets.all(8),
                 height: 40,
@@ -63,12 +72,12 @@ class MyShop extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.edit),
+                    Icon(Icons.add),
                     SizedBox(
                       width: 4,
                     ),
                     Text(
-                      "Edit Shop",
+                      "Add Product",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     )
@@ -99,70 +108,78 @@ class MyShop extends StatelessWidget {
       ),
     );
 
-    Widget manageShop = Expanded(
-        child: Container(
-      margin: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-                color: kTransparentYellow,
-                blurRadius: 4,
-                spreadRadius: 1,
-                offset: Offset(0, 1))
-          ]),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              child: Column(
-                children: [
-                  ManageCard(
-                    color: Color(0xFFE2EDFF),
-                    text: "My Products",
-                    icon: Icons.shopping_bag_outlined,
-                  ),
-                  ManageCard(
-                    color: Color(0xFFF0E3FF),
-                    text: "Ravenue",
-                    icon: Icons.attach_money,
-                  ),
-                  ManageCard(
-                    color: Color(0xFFFFE9EA),
-                    text: "Compaigns",
-                    icon: Icons.card_giftcard_rounded,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              child: Column(
-                children: [
-                  ManageCard(
-                    color: Color(0xFFFFE9EA),
-                    text: "My Orders",
-                    image: "assets/icons/note.png",
-                  ),
-                  ManageCard(
-                    color: Color(0xFFF0E3FF),
-                    text: "Statistics",
-                    icon: Icons.assessment_outlined,
-                  ),
-                  ManageCard(
-                    color: Color(0xFFE2EDFF),
-                    text: "Customers",
-                    icon: Icons.people_alt_outlined,
-                  ),
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
-    ));
+    // Widget manageShop = Expanded(
+    //     child: Container(
+    //   margin: EdgeInsets.all(8),
+    //   decoration: BoxDecoration(
+    //       borderRadius: BorderRadius.all(Radius.circular(10)),
+    //       color: Colors.white,
+    //       boxShadow: [
+    //         BoxShadow(
+    //             color: kTransparentYellow,
+    //             blurRadius: 4,
+    //             spreadRadius: 1,
+    //             offset: Offset(0, 1))
+    //       ]),
+    //   child: Row(
+    //     children: [
+    //       Expanded(
+    //         child: Container(
+    //           child: Column(
+    //             children: [
+    //               ManageCard(
+    //                 onTap: () {
+    //                   Navigator.push(
+    //                     context,
+    //                     MaterialPageRoute(
+    //                       builder: (context) => MyProductsScreen(),
+    //                     ),
+    //                   );
+    //                 },
+    //                 color: Color(0xFFE2EDFF),
+    //                 text: "My Products",
+    //                 icon: Icons.shopping_bag_outlined,
+    //               ),
+    //               ManageCard(
+    //                 color: Color(0xFFF0E3FF),
+    //                 text: "Ravenue",
+    //                 icon: Icons.attach_money,
+    //               ),
+    //               ManageCard(
+    //                 color: Color(0xFFFFE9EA),
+    //                 text: "Compaigns",
+    //                 icon: Icons.card_giftcard_rounded,
+    //               ),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //       Expanded(
+    //         child: Container(
+    //           child: Column(
+    //             children: [
+    //               ManageCard(
+    //                 color: Color(0xFFFFE9EA),
+    //                 text: "My Orders",
+    //                 image: "assets/icons/note.png",
+    //               ),
+    //               ManageCard(
+    //                 color: Color(0xFFF0E3FF),
+    //                 text: "Statistics",
+    //                 icon: Icons.assessment_outlined,
+    //               ),
+    //               ManageCard(
+    //                 color: Color(0xFFE2EDFF),
+    //                 text: "Customers",
+    //                 icon: Icons.people_alt_outlined,
+    //               ),
+    //             ],
+    //           ),
+    //         ),
+    //       )
+    //     ],
+    //   ),
+    // ));
     return Scaffold(
       backgroundColor: Colors.white,
       body: StreamBuilder<QuerySnapshot>(
@@ -170,11 +187,11 @@ class MyShop extends StatelessWidget {
         // ignore: missing_return
         builder: (context, snapshot) {
           var doc = snapshot.data.docs;
-          print(snapshot.data.docs.last.data());
+
           // ignore: omit_local_variable_types
           for (int i = 0; i < snapshot.data.docs.length; i++) {
-            print(doc[i]['shopId'].toString());
-            print(EcommerceApp.auth.currentUser.toString());
+            print(doc[i]['shopId'].toString() + 'hi');
+            print(EcommerceApp.auth.currentUser.uid.toString());
             if (doc[i]['shopId'].toString() ==
                 EcommerceApp.auth.currentUser.uid.toString()) {
               return SafeArea(
@@ -192,7 +209,7 @@ class MyShop extends StatelessWidget {
                                 width: MediaQuery.of(context).size.width,
                                 height:
                                     MediaQuery.of(context).size.height / 4.5,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: kYellow,
                                   image: DecorationImage(
                                     fit: BoxFit.fill,
@@ -217,11 +234,11 @@ class MyShop extends StatelessWidget {
                         ),
                         Positioned(
                           top: height / 3.4,
-                          left: width / 2.5,
-                          
-                          
+                          left: width / 3,
+                      
                           child: Text(
                             doc[i]['ShopName'],
+                            // ignore: prefer_const_constructors
                             style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 18,
@@ -249,20 +266,7 @@ class MyShop extends StatelessWidget {
                       ],
                     ),
                     rowButtons,
-                    Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 20, left: 16),
-                        child: Text(
-                          'SHOP MANAGEMENT',
-                          style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: "Montserrat",
-                              fontStyle: FontStyle.italic),
-                        ),
-                      ),
-                    ),
-                    manageShop,
+                    Expanded(child: MyProductsScreen()),
                   ],
                 ),
               );
