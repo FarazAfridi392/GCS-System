@@ -1,3 +1,5 @@
+import 'package:e_shop/Buyer/Screens/shop/shop_page.dart';
+import 'package:e_shop/config.dart';
 import 'package:e_shop/models/product.dart';
 import 'package:e_shop/size_config.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +50,7 @@ class ProductDescription extends StatelessWidget {
                     flex: 4,
                     child: Text.rich(
                       TextSpan(
-                        text: "\₹${product.discountPrice}   ",
+                        text: "\Rs. ${product.discountPrice}   ",
                         style: TextStyle(
                           color: kPrimaryColor,
                           fontWeight: FontWeight.w900,
@@ -56,7 +58,7 @@ class ProductDescription extends StatelessWidget {
                         ),
                         children: [
                           TextSpan(
-                            text: "\n\₹${product.originalPrice}",
+                            text: "\n\Rs. ${product.originalPrice}",
                             style: TextStyle(
                               decoration: TextDecoration.lineThrough,
                               color: kTextColor,
@@ -104,21 +106,29 @@ class ProductDescription extends StatelessWidget {
               content: product.description,
             ),
             const SizedBox(height: 16),
-            Text.rich(
-              TextSpan(
-                text: "Sold by ",
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-                children: [
-                  TextSpan(
-                    text: "${product.seller}",
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                    ),
+            InkWell(
+              onTap: () async {
+                await EcommerceApp.sharedPreferences
+                    .setString(EcommerceApp.shopProduct, product.owner);
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => ShopPage()));
+              },
+              child: Text.rich(
+                TextSpan(
+                  text: "Sold by ",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
+                  children: [
+                    TextSpan(
+                      text: "${product.seller}",
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

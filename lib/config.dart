@@ -23,6 +23,7 @@ class EcommerceApp {
   static final String userAvatarUrl = 'url';
   static final String userMobile = 'mobileNo';
   static String boolSeller = 'isSeller';
+  static String shopProduct = 'isShopProduct';
 
   static final String addressID = 'addressID';
   static final String totalAmount = 'totalAmount';

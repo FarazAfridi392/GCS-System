@@ -1,7 +1,9 @@
+import 'package:e_shop/change_password/change_password_screen.dart';
 import 'package:e_shop/config.dart';
 import 'package:e_shop/Buyer/Screens/Authentication/login.dart';
 import 'package:e_shop/Buyer/Screens/settings/legal_about_page.dart';
 import 'package:e_shop/Buyer/Screens/settings/notifications_settings_page.dart';
+import 'package:e_shop/manage_addresses/manage_addresses_screen.dart';
 import 'package:e_shop/start_Page.dart';
 import 'package:flutter/material.dart';
 import '../../../app_properties.dart';
@@ -87,7 +89,15 @@ class SettingsPage extends StatelessWidget {
                                   Image.asset('assets/icons/change_pass.png'),
                               onTap: () => Navigator.of(context).push(
                                   MaterialPageRoute(
-                                      builder: (_) => ChangePasswordPage())),
+                                      builder: (_) => ChangePasswordScreen())),
+                            ),
+                            ListTile(
+                              title: Text('Manage Addresses'),
+                              leading:
+                                  Image.asset('assets/icons/change_pass.png'),
+                              onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (_) => ManageAddressesScreen())),
                             ),
                             ListTile(
                                 title: Text('Sign out'),

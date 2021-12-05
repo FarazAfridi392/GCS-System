@@ -1,9 +1,18 @@
+import 'package:e_shop/Buyer/models/product.dart';
 import 'package:e_shop/Seller/Widgets/drop_down._button.dart';
 import 'package:e_shop/app_properties.dart';
 import 'package:flutter/material.dart';
 
 class OrdersProductDetails extends StatelessWidget {
-  const OrdersProductDetails({
+  String productName;
+  String productAmount;
+  String productImageUrl;
+  String status;
+  OrdersProductDetails({
+    this.productName,
+    this.productAmount,
+    this.productImageUrl,
+    this.status,
     Key key,
   }) : super(key: key);
 
@@ -20,21 +29,27 @@ class OrdersProductDetails extends StatelessWidget {
     return Container(
       color: Colors.white,
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height / 2,
+      height: MediaQuery.of(context).size.height / 4,
       child: Padding(
         padding: const EdgeInsets.only(left: 20.0, top: 25.0),
         child: Column(
           children: [
             Row(
               children: [
-                Image.asset('assets/component-small.png'),
+                Container(
+                    height: 50,
+                    width: 50,
+                    child: Image.network(
+                      productImageUrl,
+                      fit: BoxFit.fill,
+                    )),
                 Padding(
                   padding: const EdgeInsets.only(left: 18.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Product Name',
+                        productName,
                         style: kDashBoardText.copyWith(fontSize: 14),
                       ),
                       Text(
@@ -44,7 +59,7 @@ class OrdersProductDetails extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            '52,000.000',
+                            productAmount,
                             style: kDashBoardText.copyWith(
                               fontSize: 15,
                               color: Color(0xFFFF6969),
@@ -65,45 +80,6 @@ class OrdersProductDetails extends StatelessWidget {
               height: MediaQuery.of(context).size.height / 20,
             ),
             horizontalLine,
-            SizedBox(
-              height: MediaQuery.of(context).size.height / 20,
-            ),
-            Row(
-              children: [
-                Image.asset('assets/component-small.png'),
-                Padding(
-                  padding: const EdgeInsets.only(left: 18.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Product Name',
-                        style: kDashBoardText.copyWith(fontSize: 14),
-                      ),
-                      Text(
-                        'ID #2422434643',
-                        style: kBoldedText.copyWith(fontSize: 10),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            '52,000.000',
-                            style: kDashBoardText.copyWith(
-                              fontSize: 15,
-                              color: Color(0xFFFF6969),
-                            ),
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width / 3.9,
-                          ),
-                          DorpDownButton(),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
           ],
         ),
       ),

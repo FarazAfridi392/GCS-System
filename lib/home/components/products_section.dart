@@ -14,7 +14,7 @@ class ProductsSection extends StatelessWidget {
   final Function onProductCardTapped;
   const ProductsSection({
     Key key,
-    @required this.sectionTitle,
+    this.sectionTitle,
     @required this.productsStreamController,
     this.emptyListMessage = "No Products to show here",
     @required this.onProductCardTapped,

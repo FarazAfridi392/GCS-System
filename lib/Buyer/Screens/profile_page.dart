@@ -5,6 +5,7 @@ import 'package:e_shop/config.dart';
 import 'package:e_shop/Buyer/Screens/settings/settings_page.dart';
 import 'package:e_shop/Buyer/Screens/wallet/wallet_page.dart';
 import 'package:e_shop/Seller/Screens/SellerHome/mainPage.dart';
+import 'package:e_shop/my_orders/my_orders_screen.dart';
 import 'package:flutter/material.dart';
 import '../../app_properties.dart';
 import 'faq_page.dart';
@@ -28,19 +29,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 EdgeInsets.only(left: 16.0, right: 16.0, top: kToolbarHeight),
             child: Column(
               children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChangeDisplayPictureScreen(),
-                        ));
-                  },
-                  child: CircleAvatar(
-                    maxRadius: 50,
-                    backgroundImage: NetworkImage(
-                        EcommerceApp.sharedPreferences.getString(EcommerceApp.userAvatarUrl)),
-                  ),
+                CircleAvatar(
+                  maxRadius: 50,
+                  backgroundImage: NetworkImage(EcommerceApp.sharedPreferences
+                      .getString(EcommerceApp.userAvatarUrl) ?? " "),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -48,7 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          EcommerceApp.auth.currentUser.displayName,
+                          EcommerceApp.auth.currentUser.displayName ?? EcommerceApp.sharedPreferences.getString(EcommerceApp.userName),
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         IconButton(
@@ -107,7 +99,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: <Widget>[
                             IconButton(
                                 icon: Image.asset('assets/icons/truck.png'),
-                                onPressed: () {}),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MyOrdersScreen(),
+                                    ),
+                                  );
+                                }),
                             Text(
                               'Shipped',
                               style: TextStyle(fontWeight: FontWeight.bold),

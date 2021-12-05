@@ -208,6 +208,19 @@ class ProductDatabaseHelper {
     return usersProducts;
   }
 
+  Future<List<String>> SellerProductsList(String uid) async {
+    final productsCollectionReference =
+        firestore.collection(PRODUCTS_COLLECTION_NAME);
+    final querySnapshot = await productsCollectionReference
+        .where(Product.OWNER_KEY, isEqualTo: uid)
+        .get();
+    List usersProducts = List<String>();
+    querySnapshot.docs.forEach((doc) {
+      usersProducts.add(doc.id);
+    });
+    return usersProducts;
+  }
+
   Future<List<String>> get allProductsList async {
     final products = await firestore.collection(PRODUCTS_COLLECTION_NAME).get();
     List productsId = List<String>();

@@ -5,6 +5,7 @@ import 'package:e_shop/cart/components/checkout_card.dart';
 import 'package:e_shop/components/default_button.dart';
 import 'package:e_shop/components/nothingtoshow_container.dart';
 import 'package:e_shop/components/product_short_detail_card.dart';
+import 'package:e_shop/config.dart';
 import 'package:e_shop/constants.dart';
 import 'package:e_shop/models/CartItem.dart';
 import 'package:e_shop/models/orderedProduct.dart';
@@ -362,22 +363,30 @@ class _BodyState extends State<Body> {
       return;
     }
     final orderFuture = UserDatabaseHelper().emptyCart();
-    orderFuture.then((orderedProductsUid) async {
+    await EcommerceApp.sharedPreferences
+        .setString('currentUserId', EcommerceApp.auth.currentUser.uid);
+
+    await orderFuture.then((orderedProductsUid) async {
       if (orderedProductsUid != null) {
-        print(orderedProductsUid);
+        print(EcommerceApp.sharedPreferences.getString('currentUserId'));
         final dateTime = DateTime.now();
         final formatedDateTime =
             "${dateTime.day}-${dateTime.month}-${dateTime.year}";
         // ignore: omit_local_variable_types
         List<OrderedProduct> orderedProducts = orderedProductsUid
             .map((e) => OrderedProduct(null,
-                productUid: e, orderDate: formatedDateTime))
+                currentUserUid:
+                    EcommerceApp.sharedPreferences.getString('currentUserId'),
+                productUid: e,
+                orderDate: formatedDateTime))
             .toList();
         bool addedProductsToMyProducts = false;
         String snackbarmMessage;
         try {
           addedProductsToMyProducts =
               await UserDatabaseHelper().addToMyOrders(orderedProducts);
+          await UserDatabaseHelper().addToOrdersCollection(orderedProducts);
+
           if (addedProductsToMyProducts) {
             snackbarmMessage = "Products ordered Successfully";
           } else {

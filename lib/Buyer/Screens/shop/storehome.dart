@@ -3,7 +3,7 @@ import 'package:e_shop/Buyer/Screens/components/product_list.dart';
 import 'package:e_shop/Buyer/Screens/components/tab_view.dart';
 import 'package:e_shop/Buyer/Screens/shop/check_out_page.dart';
 import 'package:e_shop/Buyer/models/product.dart';
-import 'package:e_shop/Buyer/Screens/Chat/chatPage.dart';
+import 'package:e_shop/Buyer/Screens/Chat/chat_page.dart';
 import 'package:e_shop/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -53,7 +53,7 @@ class _StoreHomeState extends State<StoreHome>
   void initState() {
     super.initState();
     tabController = TabController(length: 5, vsync: this);
-    bottomTabController = TabController(length: 4, vsync: this);
+    bottomTabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -238,257 +238,13 @@ class _StoreHomeState extends State<StoreHome>
             //   ),
             // ),
             HomeScreen(),
-            CategoryListPage(),
+
             ChatPage(),
             ProfilePage()
           ],
         ),
       ),
     );
-//     return SafeArea(
-//       child: Scaffold(
-//         appBar: AppBar(
-//           flexibleSpace: Container(
-//             decoration: new BoxDecoration(
-//               gradient: new LinearGradient(
-//                   colors: [Colors.pink, Colors.lightGreenAccent],
-//                   begin: new FractionalOffset(0.0, 0.0),
-//                   end: new FractionalOffset(1.0, 0.0),
-//                   stops: [0.0, 1.0],
-//                   tileMode: TileMode.clamp),
-//             ),
-//           ),
-//           title: Text(
-//             'e-Shop',
-//             style: TextStyle(
-//               fontSize: 55.0,
-//               color: Colors.white,
-//               fontFamily: "Signatra",
-//             ),
-//           ),
-//           centerTitle: true,
-//           actions: [
-//             Stack(
-//               children: [
-//                 IconButton(
-//                   onPressed: () {
-//                     Navigator.push(
-//                       context,
-//                       MaterialPageRoute(
-//                         builder: (_) => CartPage(),
-//                       ),
-//                     );
-//                   },
-//                   icon: Icon(
-//                     Icons.shopping_cart,
-//                     color: Colors.pink,
-//                   ),
-//                 ),
-//                 Positioned(
-//                   child: Stack(
-//                     children: [
-//                       Icon(
-//                         Icons.brightness_1,
-//                         size: 20.0,
-//                         color: Colors.green,
-//                       ),
-//                       Positioned(
-//                         child: Consumer<CartItemCounter>(
-//                           builder: (context, counter, _) {
-//                             return Text(
-//                               counter.count.toString(),
-//                               style: TextStyle(
-//                                 color: Colors.white,
-//                                 fontSize: 12.0,
-//                                 fontWeight: FontWeight.w500,
-//                               ),
-//                             );
-//                           },
-//                         ),
-//                         top: 3.0,
-//                         bottom: 4.0,
-//                         left: 6,
-//                       )
-//                     ],
-//                   ),
-//                 ),
-//               ],
-//             )
-//           ],
-//         ),
-//         drawer: MyDrawer(),
-//         z
-//       ),
-//     );
-//   }
-// }
-
-// Widget sourceInfo(ItemModel model, BuildContext context,
-//     {Color background, removeCartFunction}) {
-//   return InkWell(
-//     onTap: () {
-//       Navigator.pushReplacement(
-//         context,
-//         MaterialPageRoute(
-//           builder: (_) => ProductPage(itemModel: model),
-//         ),
-//       );
-//     },
-//     splashColor: Colors.pink,
-//     child: Padding(
-//       padding: EdgeInsets.all(6),
-//       child: Container(
-//         height: 190.0,
-//         width: width,
-//         child: Row(
-//           children: [
-//             Image.network(
-//               model.thumbnailUrl,
-//               width: 140,
-//               height: 140,
-//             ),
-//             SizedBox(
-//               width: 4.0,
-//             ),
-//             Expanded(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   SizedBox(
-//                     height: 15.0,
-//                   ),
-//                   Container(
-//                     child: Row(
-//                       mainAxisSize: MainAxisSize.max,
-//                       children: [
-//                         Expanded(
-//                           child: Text(
-//                             model.title,
-//                             style:
-//                                 TextStyle(color: Colors.black, fontSize: 14.0),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                   SizedBox(
-//                     height: 5,
-//                   ),
-//                   Container(
-//                     child: Row(
-//                       mainAxisSize: MainAxisSize.max,
-//                       children: [
-//                         Expanded(
-//                           child: Text(
-//                             model.shortInfo,
-//                             style: TextStyle(
-//                                 color: Colors.black54, fontSize: 12.0),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                   SizedBox(
-//                     height: 20,
-//                   ),
-//                   Row(
-//                     children: [
-//                       Container(
-//                         decoration: BoxDecoration(
-//                           shape: BoxShape.rectangle,
-//                           color: Colors.pink,
-//                         ),
-//                         alignment: Alignment.topLeft,
-//                         width: 40,
-//                         height: 43,
-//                         child: Center(
-//                           child: Column(
-//                             mainAxisAlignment: MainAxisAlignment.center,
-//                             children: [
-//                               Text(
-//                                 "50%",
-//                                 style: TextStyle(
-//                                   fontSize: 15,
-//                                   color: Colors.white,
-//                                   fontWeight: FontWeight.normal,
-//                                 ),
-//                               ),
-//                               Text(
-//                                 "OFF",
-//                                 style: TextStyle(
-//                                   fontSize: 12,
-//                                   color: Colors.white,
-//                                   fontWeight: FontWeight.normal,
-//                                 ),
-//                               ),
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                       SizedBox(
-//                         width: 10,
-//                       ),
-//                       Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Padding(
-//                             padding: EdgeInsets.only(top: 0),
-//                             child: Row(
-//                               children: [
-//                                 Text(
-//                                   r"Original Price $ ",
-//                                   style: TextStyle(
-//                                     fontSize: 14,
-//                                     color: Colors.grey,
-//                                     decoration: TextDecoration.lineThrough,
-//                                   ),
-//                                 ),
-//                                 Text(
-//                                   (model.price + model.price).toString(),
-//                                   style: TextStyle(
-//                                     fontSize: 15,
-//                                     color: Colors.grey,
-//                                     decoration: TextDecoration.lineThrough,
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                           Padding(
-//                             padding: EdgeInsets.only(top: 5),
-//                             child: Row(
-//                               children: [
-//                                 Text(
-//                                   r"New Price $ ",
-//                                   style: TextStyle(
-//                                     fontSize: 14,
-//                                     color: Colors.grey,
-//                                   ),
-//                                 ),
-//                                 Text(
-//                                   (model.price).toString(),
-//                                   style: TextStyle(
-//                                     fontSize: 15,
-//                                     color: Colors.grey,
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ],
-//                   ),
-//                   Flexible(
-//                     child: Container(),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     ),
-//   );
+//     
   }
 }

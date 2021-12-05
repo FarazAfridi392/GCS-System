@@ -35,14 +35,14 @@ class MyShop extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.edit_location_alt_outlined),
-                    SizedBox(
-                      width: 4,
-                    ),
+                    Expanded(child: Icon(Icons.edit_location_alt_outlined)),
                     Text(
                       "Edit Location",
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          // ignore: prefer_const_constructors
+                          TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
                     )
                   ],
                 ),
@@ -72,14 +72,15 @@ class MyShop extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.add),
+                    Expanded(child: Icon(Icons.add)),
                     SizedBox(
                       width: 4,
                     ),
                     Text(
                       "Add Product",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
                     )
                   ],
                 ),
@@ -186,13 +187,11 @@ class MyShop extends StatelessWidget {
         stream: FirebaseFirestore.instance.collection('Shop').snapshots(),
         // ignore: missing_return
         builder: (context, snapshot) {
-          var doc = snapshot.data.docs;
-
           // ignore: omit_local_variable_types
           for (int i = 0; i < snapshot.data.docs.length; i++) {
-            print(doc[i]['shopId'].toString() + 'hi');
+            print(snapshot.data.docs[i]['shopId'].toString() + 'hi');
             print(EcommerceApp.auth.currentUser.uid.toString());
-            if (doc[i]['shopId'].toString() ==
+            if (snapshot.data.docs[i]['shopId'].toString() ==
                 EcommerceApp.auth.currentUser.uid.toString()) {
               return SafeArea(
                 child: Column(
@@ -201,7 +200,7 @@ class MyShop extends StatelessWidget {
                     Stack(
                       children: [
                         Container(
-                          height: height / 3,
+                          height: height / 3.2,
                           color: Colors.white,
                           child: Column(
                             children: [
@@ -233,21 +232,6 @@ class MyShop extends StatelessWidget {
                           ),
                         ),
                         Positioned(
-                          top: height / 3.4,
-                          left: width / 3,
-                      
-                          child: Text(
-                            doc[i]['ShopName'],
-                            // ignore: prefer_const_constructors
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: "Montserrat",
-                                fontStyle: FontStyle.italic),
-                          ),
-                        ),
-                        Positioned(
                           right: width / 3,
                           left: width / 3,
                           top: height / 6.2,
@@ -265,6 +249,17 @@ class MyShop extends StatelessWidget {
                         ),
                       ],
                     ),
+                    Text(
+                      snapshot.data.docs[i]['ShopName'],
+                      // ignore: prefer_const_constructors
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Montserrat",
+                          fontStyle: FontStyle.italic),
+                    ),
+                    SizedBox(height: 3),
                     rowButtons,
                     Expanded(child: MyProductsScreen()),
                   ],
@@ -272,7 +267,7 @@ class MyShop extends StatelessWidget {
               );
             }
           }
-          // if (snapshot.data.docs.contains() == null) {
+          // if (snapshot.data. snapshot.data.docss.contains() == null) {
           //   return createShop();
           // } else {
           //   return MyShop();

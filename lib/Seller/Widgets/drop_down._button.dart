@@ -50,6 +50,10 @@ class _DorpDownButtonState extends State<DorpDownButton> {
   onChnageDropdownItem(OrderStatus selectedOrderStatus) {
     setState(() {
       _selectedorderStatus = selectedOrderStatus;
+      if (_selectedorderStatus ==
+          OrderStatus(id: 4, name: 'Deliverd', color: Colors.green)) {
+        Navigator.of(context).pop();
+      }
     });
   }
 

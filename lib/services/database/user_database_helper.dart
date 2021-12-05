@@ -117,6 +117,31 @@ class UserDatabaseHelper {
     return addresses;
   }
 
+  Future<List<String>> addressesListofOrderer(String uid) async {
+    final snapshot = await firestore
+        .collection(USERS_COLLECTION_NAME)
+        .doc(uid)
+        .collection(ADDRESSES_COLLECTION_NAME)
+        .get();
+    final addresses = List<String>();
+    snapshot.docs.forEach((doc) {
+      addresses.add(doc.id);
+    });
+
+    return addresses;
+  }
+
+  Future<Address> getAddressofOrdererFromId(String id, String uid) async {
+    final doc = await firestore
+        .collection(USERS_COLLECTION_NAME)
+        .doc(uid)
+        .collection(ADDRESSES_COLLECTION_NAME)
+        .doc(id)
+        .get();
+    final address = Address.fromMap(doc.data(), id: doc.id);
+    return address;
+  }
+
   Future<Address> getAddressFromId(String id) async {
     String uid = AuthentificationService().currentUser.uid;
     final doc = await firestore
@@ -125,6 +150,13 @@ class UserDatabaseHelper {
         .collection(ADDRESSES_COLLECTION_NAME)
         .doc(id)
         .get();
+    final address = Address.fromMap(doc.data(), id: doc.id);
+    return address;
+  }
+
+  Future<Address> getAddress(String id) async {
+    final doc =
+        await firestore.collection(ADDRESSES_COLLECTION_NAME).doc(id).get();
     final address = Address.fromMap(doc.data(), id: doc.id);
     return address;
   }
@@ -139,6 +171,14 @@ class UserDatabaseHelper {
     return true;
   }
 
+  Future<bool> addAddress(Address address) async {
+    String uid = AuthentificationService().currentUser.uid;
+    final addressesCollectionReference =
+        firestore.collection(ADDRESSES_COLLECTION_NAME);
+    await addressesCollectionReference.add(address.toMap());
+    return true;
+  }
+
   Future<bool> deleteAddressForCurrentUser(String id) async {
     String uid = AuthentificationService().currentUser.uid;
     final addressDocReference = firestore
@@ -146,6 +186,12 @@ class UserDatabaseHelper {
         .doc(uid)
         .collection(ADDRESSES_COLLECTION_NAME)
         .doc(id);
+    await addressDocReference.delete();
+    return true;
+  }
+
+  Future<bool> deleteOrderForCurrentSeller(String id) async {
+    final addressDocReference = firestore.collection('Orders').doc(id);
     await addressDocReference.delete();
     return true;
   }
@@ -200,6 +246,21 @@ class UserDatabaseHelper {
     List orderedProductsUid = List<String>();
     for (final doc in cartItems.docs) {
       orderedProductsUid.add(doc.id);
+      await doc.reference.delete();
+    }
+    return orderedProductsUid;
+  }
+
+  Future<List<String>> ownerKey() async {
+    String uid = AuthentificationService().currentUser.uid;
+    final cartItems = await firestore
+        .collection(USERS_COLLECTION_NAME)
+        .doc(uid)
+        .collection(CART_COLLECTION_NAME)
+        .get();
+    List orderedProductsUid = List<String>();
+    for (final doc in cartItems.docs) {
+      orderedProductsUid.add(doc.data().entries.first);
       await doc.reference.delete();
     }
     return orderedProductsUid;
@@ -287,12 +348,32 @@ class UserDatabaseHelper {
     return orderedProductsId;
   }
 
+  Future<List<String>> get orderedProductsListFromOrder async {
+    String uid = AuthentificationService().currentUser.uid;
+    final orderedProductsSnapshot = await firestore.collection('Orders').get();
+    List orderedProductsId = List<String>();
+    for (final doc in orderedProductsSnapshot.docs) {
+      orderedProductsId.add(doc.id);
+    }
+    return orderedProductsId;
+  }
+
   Future<bool> addToMyOrders(List<OrderedProduct> orders) async {
     String uid = AuthentificationService().currentUser.uid;
     final orderedProductsCollectionRef = firestore
         .collection(USERS_COLLECTION_NAME)
         .doc(uid)
         .collection(ORDERED_PRODUCTS_COLLECTION_NAME);
+    for (final order in orders) {
+      await orderedProductsCollectionRef.add(order.toMap());
+    }
+    return true;
+  }
+
+  Future<bool> addToOrdersCollection(List<OrderedProduct> orders) async {
+    String uid = AuthentificationService().currentUser.uid;
+    final orderedProductsCollectionRef = firestore.collection('Orders');
+
     for (final order in orders) {
       await orderedProductsCollectionRef.add(order.toMap());
     }
@@ -311,13 +392,16 @@ class UserDatabaseHelper {
     return orderedProduct;
   }
 
+  Future<OrderedProduct> getOrderedProductFromOrder(String id) async {
+    String uid = AuthentificationService().currentUser.uid;
+    final doc = await firestore.collection('Orders').doc(id).get();
+    final orderedProduct = OrderedProduct.fromMap(doc.data(), id: doc.id);
+    return orderedProduct;
+  }
+
   Stream<DocumentSnapshot> get currentUserDataStream {
     String uid = AuthentificationService().currentUser.uid;
-    return firestore
-        .collection(USERS_COLLECTION_NAME)
-        .doc(uid)
-        .get()
-        .asStream();
+    return firestore.collection('Orders').doc(uid).get().asStream();
   }
 
   Future<bool> updatePhoneForCurrentUser(String phone) async {

@@ -1,11 +1,27 @@
 import 'package:e_shop/Buyer/Screens/Authentication/login.dart';
 import 'package:e_shop/Buyer/Screens/shop/shop_details_page.dart';
+import 'package:e_shop/Buyer/Screens/shop/shop_product/components/item_card.dart';
 import 'package:e_shop/Buyer/Screens/shop/shop_product/home_screen.dart';
 import 'package:e_shop/Buyer/Screens/shop/shop_reviews_page.dart';
 import 'package:e_shop/Seller/Screens/Auth/seller_login.dart';
+import 'package:e_shop/Seller/product_details/product_details_screen.dart';
+import 'package:e_shop/Seller/product_short_detail_card.dart';
 import 'package:e_shop/app_properties.dart';
+import 'package:e_shop/components/nothingtoshow_container.dart';
+import 'package:e_shop/components/product_card.dart';
 import 'package:e_shop/config.dart';
+import 'package:e_shop/constants.dart' as pre;
+import 'package:e_shop/home/components/products_section.dart';
+import 'package:e_shop/home/components/section_tile.dart';
+import 'package:e_shop/models/product.dart';
+import 'package:e_shop/services/data_streams/all_products_stream.dart';
+import 'package:e_shop/services/data_streams/users_products_stream.dart';
+import 'package:e_shop/services/database/product_database_helper.dart';
+import 'package:e_shop/size_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:logger/logger.dart';
+import 'package:logger/logger.dart';
 import 'package:sizer/sizer.dart';
 
 class ShopPage extends StatefulWidget {
@@ -16,16 +32,28 @@ class ShopPage extends StatefulWidget {
 class _ShopPageState extends State<ShopPage>
     with SingleTickerProviderStateMixin {
   TabController controller;
+  final UsersProductsStream usersProductsStream = UsersProductsStream();
+  final AllProductsStream allProductsStream = AllProductsStream();
+
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 3, vsync: this);
+    usersProductsStream.init();
+    allProductsStream.init();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    usersProductsStream.dispose();
+    allProductsStream.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+
     Widget profileHeader = Stack(
       children: [
         Container(
@@ -175,6 +203,206 @@ class _ShopPageState extends State<ShopPage>
         ],
       ),
     );
+    Future<void> refreshPage() {
+      allProductsStream.reload();
+      return Future<void>.value();
+    }
+
+    void onProductCardTapped(String productId) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProductDetailsScreen(productId: productId),
+        ),
+      ).then((_) async {
+        await refreshPage();
+      });
+    }
+
+    Column buildProductCardItems(Product product) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.network(
+                product.images[0],
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          Flexible(
+            flex: 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: Text(
+                    "${product.title}\n",
+                    style: TextStyle(
+                      color: kTextColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Flexible(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        flex: 5,
+                        child: Text.rich(
+                          TextSpan(
+                            text: "\Rs. ${product.discountPrice}\n",
+                            style: TextStyle(
+                              color: pre.kPrimaryColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: "\Rs. ${product.originalPrice}",
+                                style: TextStyle(
+                                  color: kTextColor,
+                                  decoration: TextDecoration.lineThrough,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Flexible(
+                        flex: 3,
+                        child: Stack(
+                          children: [
+                            SvgPicture.asset(
+                              "assets/icons/DiscountTag.svg",
+                              color: pre.kPrimaryColor,
+                            ),
+                            Center(
+                              child: Text(
+                                "${product.calculatePercentageDiscount()}%\nOff",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    Widget buildProductGrid(List<String> productsId) {
+      return GridView.builder(
+        shrinkWrap: true,
+        physics: BouncingScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.7,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+        ),
+        itemCount: productsId.length,
+        itemBuilder: (context, index) {
+          return FutureBuilder<Product>(
+            future: ProductDatabaseHelper().getProductWithID(productsId[index]),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final Product product = snapshot.data;
+
+                if (product.owner ==
+                    EcommerceApp.sharedPreferences
+                        .getString(EcommerceApp.shopProduct)) {
+                  return GestureDetector(
+                    onTap: () {
+                      onProductCardTapped.call(productsId[index]);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: kTextColor.withOpacity(0.15)),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(16),
+                        ),
+                      ),
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 10),
+                          child: buildProductCardItems(product)),
+                    ),
+                  );
+                }
+              } else if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              } else if (snapshot.hasError) {
+                final error = snapshot.error.toString();
+                Logger().e(error);
+              }
+              return SizedBox(height: 0, width: 0);
+            },
+          );
+        },
+      );
+    }
+
+    Widget buildProductsList() {
+      return StreamBuilder<List<String>>(
+        stream: ProductDatabaseHelper()
+            .SellerProductsList(EcommerceApp.sharedPreferences
+                .getString(EcommerceApp.shopProduct))
+            .asStream(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data.length == 0) {
+              return Center(
+                child: NothingToShowContainer(
+                  secondaryMessage: "Looks like this store is closed",
+                ),
+              );
+            }
+            return buildProductGrid(snapshot.data);
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            final error = snapshot.error;
+            Logger().w(error.toString());
+          }
+          return Center(
+            child: NothingToShowContainer(
+              iconPath: "assets/icons/network_error.svg",
+              primaryMessage: "Something went wrong",
+              secondaryMessage: "Unable to connect to Database",
+            ),
+          );
+        },
+      );
+    }
 
     return Sizer(
       builder: (context, orientation, deviceType) {
@@ -188,57 +416,118 @@ class _ShopPageState extends State<ShopPage>
               SliverToBoxAdapter(
                 child: rowButtons,
               ),
-              SliverAppBar(
-                backgroundColor: Colors.white,
-                bottom: PreferredSize(
-                  preferredSize: Size.fromHeight(0.h),
-                  child: Theme(
-                    data: Theme.of(context).copyWith(accentColor: Colors.black),
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                                color: kTransparentYellow,
-                                blurRadius: 4,
-                                spreadRadius: 1,
-                                offset: Offset(0, 1))
-                          ]),
-                      height: 6.h,
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      child: TabBar(
-                        indicator: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(10), // Creates border
-                            color: kYellow),
-                        labelColor: Colors.white,
-                        unselectedLabelColor: Colors.black,
-                        indicatorWeight: 2,
-                        labelStyle: TextStyle(
-                            fontSize: 14.sp, fontFamily: "NunitoBold"),
-                        tabs: [
-                          Tab(text: 'Details'),
-                          Tab(text: 'Products'),
-                          Tab(text: 'Reviews'),
-                        ],
-                        controller: controller,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               SliverFillRemaining(
-                child: TabBarView(
-                  controller: controller,
-                  children: <Widget>[
-                    ShopDetailsPage(),
-                    HomeScreen(),
-                    ShopReviewsPage()
-                  ],
-                ),
+                child: SizedBox(
+                    height: SizeConfig.screenHeight * 0.8,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFF5F6F9),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Column(
+                        children: [
+                          SectionTile(
+                            title: "This Shop Products",
+                            press: () {},
+                          ),
+                          SizedBox(height: getProportionateScreenHeight(15)),
+                          Expanded(
+                            child: buildProductsList(),
+                          ),
+                        ],
+                      ),
+                    )),
+                // child: StreamBuilder<List<String>>(
+                //   stream: usersProductsStream.stream,
+                //   builder: (context, snapshot) {
+                //     if (snapshot.hasData) {
+                //       print(snapshot.data);
+                //       final productsIds = snapshot.data;
+                //       if (productsIds.length == 0) {
+                //         return Center(
+                //           child: NothingToShowContainer(
+                //             secondaryMessage: "No products to show",
+                //           ),
+                //         );
+                //       }
+                //       return ListView.builder(
+                //         physics: BouncingScrollPhysics(),
+                //         itemCount: productsIds.length,
+                //         itemBuilder: (context, index) {
+                //           return FutureBuilder<Product>(
+                //             future: ProductDatabaseHelper()
+                //                 .getProductWithID(productsIds[index]),
+                //             builder: (context, snapshot) {
+                //               if (snapshot.hasData) {
+                //                 final product = snapshot.data;
+                //                 return GestureDetector(
+                //                     onTap: () {
+                //                       Navigator.push(
+                //                         context,
+                //                         MaterialPageRoute(
+                //                           builder: (context) =>
+                //                               ProductDetailsScreen(
+                //                             productId: product.id,
+                //                           ),
+                //                         ),
+                //                       );
+                //                     },
+                //                     child: Expanded(
+                //                         child: ProductShortDetailCard(
+                //                       productId: product.id,
+                //                       onPressed: () {
+                //                         Navigator.push(
+                //                           context,
+                //                           MaterialPageRoute(
+                //                             builder: (context) =>
+                //                                 ProductDetailsScreen(
+                //                               productId: product.id,
+                //                             ),
+                //                           ),
+                //                         );
+                //                       },
+                //                     )));
+                //               } else if (snapshot.connectionState ==
+                //                   ConnectionState.waiting) {
+                //                 return Center(
+                //                     child: CircularProgressIndicator());
+                //               } else if (snapshot.hasError) {
+                //                 final error = snapshot.error.toString();
+                //                 Logger().e(error);
+                //               }
+                //               return Center(
+                //                 child: Icon(
+                //                   Icons.error,
+                //                   color: kTextColor,
+                //                   size: 60,
+                //                 ),
+                //               );
+                //             },
+                //           );
+                //         },
+                //       );
+                //     } else if (snapshot.connectionState ==
+                //         ConnectionState.waiting) {
+                //       return Center(
+                //         child: CircularProgressIndicator(),
+                //       );
+                //     } else if (snapshot.hasError) {
+                //       final error = snapshot.error;
+                //       Logger().w(error.toString());
+                //     }
+                //     return Center(
+                //       child: NothingToShowContainer(
+                //         iconPath: "assets/icons/network_error.svg",
+                //         primaryMessage: "Something went wrong",
+                //         secondaryMessage: "Unable to connect to Database",
+                //       ),
+                //     );
+                //   },
+                // ),
               ),
             ],
           ),

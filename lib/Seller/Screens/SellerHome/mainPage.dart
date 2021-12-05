@@ -1,8 +1,9 @@
-import 'package:e_shop/Buyer/Screens/Chat/chatPage.dart';
+import 'package:e_shop/Buyer/Screens/Chat/chat_page.dart';
 
 import 'package:e_shop/Seller/Screens/SellerHome/Components/homepage_data.dart';
 import 'package:e_shop/Seller/Screens/seller_notification_page.dart';
 import 'package:e_shop/Seller/Screens/seller_profile_page.dart';
+import 'package:e_shop/size_config.dart';
 import 'package:flutter/material.dart';
 import '../seller_bottom_bar.dart';
 
@@ -36,6 +37,7 @@ class _SellerHomeState extends State<SellerHome>
         ],
       ),
     );
+    SizeConfig().init(context);
     return Scaffold(
       bottomNavigationBar: SellerBottomBar(controller: bottomTabController),
       body: CustomPaint(

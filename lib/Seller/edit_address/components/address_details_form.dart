@@ -317,6 +317,7 @@ class _AddressDetailsFormState extends State<AddressDetailsForm> {
       try {
         status =
             await UserDatabaseHelper().addAddressForCurrentUser(newAddress);
+            await UserDatabaseHelper().addAddress(newAddress);
         if (status == true) {
           snackbarMessage = "Address saved successfully";
         } else {
