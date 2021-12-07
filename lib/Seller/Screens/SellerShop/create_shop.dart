@@ -437,6 +437,10 @@ class _CreateShopState extends State<CreateShop>
         stream: FirebaseFirestore.instance.collection('Shop').snapshots(),
         // ignore: missing_return
         builder: (context, snapshot) {
+          if (snapshot.data == null) {
+            return Center(child: CircularProgressIndicator());
+          }
+
           var doc = snapshot.data.docs;
           print(snapshot.data.docs.last.data());
           // ignore: omit_local_variable_types

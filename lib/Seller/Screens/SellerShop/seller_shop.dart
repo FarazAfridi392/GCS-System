@@ -189,8 +189,8 @@ class MyShop extends StatelessWidget {
         builder: (context, snapshot) {
           // ignore: omit_local_variable_types
           for (int i = 0; i < snapshot.data.docs.length; i++) {
-            print(snapshot.data.docs[i]['shopId'].toString() + 'hi');
-            print(EcommerceApp.auth.currentUser.uid.toString());
+            // print(snapshot.data.docs[i]['shopId'].toString() + 'hi');
+            // print(EcommerceApp.auth.currentUser.uid.toString());
             if (snapshot.data.docs[i]['shopId'].toString() ==
                 EcommerceApp.auth.currentUser.uid.toString()) {
               return SafeArea(
@@ -267,6 +267,7 @@ class MyShop extends StatelessWidget {
               );
             }
           }
+
           // if (snapshot.data. snapshot.data.docss.contains() == null) {
           //   return createShop();
           // } else {

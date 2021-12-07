@@ -42,6 +42,7 @@ class _HomePageDataState extends State<HomePageData> {
   String a4;
   String a5;
   String a6;
+  String noOrder = 'fjdlfjdlfj';
 
   Future addAddressForCurrentUser(String uid) async {
     List<String> addressIds =
@@ -60,8 +61,13 @@ class _HomePageDataState extends State<HomePageData> {
   @override
   void initState() {
     super.initState();
-    
+
     orderedProductsStream.init();
+  }
+  @override
+  void setState(VoidCallback fn) {
+    // TODO: implement setState
+    super.setState(fn);
   }
 
   @override
@@ -72,24 +78,26 @@ class _HomePageDataState extends State<HomePageData> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: avoid_unnecessary_containers
+
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 29, top: 25),
+          const Padding(
+            padding: EdgeInsets.only(left: 29, top: 25),
             child: Text(
               'Last Month Earnings',
               style: kCommonTextStyle,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 29.0, top: 6),
+          const Padding(
+            padding: EdgeInsets.only(left: 29.0, top: 6),
             child: Text('Rs. 100000', style: kBoldedText),
           ),
           Container(
-            margin: EdgeInsets.all(12),
-            decoration: BoxDecoration(
+            margin: const EdgeInsets.all(12),
+            decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 color: Colors.white,
                 boxShadow: [
@@ -147,21 +155,39 @@ class _HomePageDataState extends State<HomePageData> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
-          Padding(
+          const Padding(
             padding: const EdgeInsets.only(left: 29.0),
             child: Text('New Orders', style: TextStyle()),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Padding(
             padding: const EdgeInsets.only(left: 15.0, right: 15),
             child: SizedBox(
               height: SizeConfig.screenHeight * 0.75,
-              child: buildOrderedProductsList(),
+              child: Column(
+                children: [
+                  Expanded(child: buildOrderedProductsList()),
+                  noOrder == 'this user has no order'
+                      ? Container(
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          child: const Center(
+                            child: NothingToShowContainer(
+                              iconPath: 'assets/icons/empty_bag.svg',
+                              secondaryMessage:
+                                  'You have no orders to show here',
+                            ),
+                          ),
+                        )
+                      : const SizedBox(
+                          height: 1,
+                        )
+                ],
+              ),
             ),
           ),
           // Center(
@@ -209,39 +235,42 @@ class _HomePageDataState extends State<HomePageData> {
   }
 
   Widget buildOrderedProductsList() {
+    
     return StreamBuilder<List<String>>(
       stream: UserDatabaseHelper().orderedProductsListFromOrder.asStream(),
       builder: (context, snapshot) {
+        noOrder = 'this user has no order';
         if (snapshot.hasData) {
           final orderedProductsIds = snapshot.data;
           if (orderedProductsIds.length == 0) {
-            return Center(
+            return const Center(
               child: NothingToShowContainer(
-                iconPath: "assets/icons/empty_bag.svg",
-                secondaryMessage: "You have no orders to show here",
+                iconPath: 'assets/icons/empty_bag.svg',
+                secondaryMessage: 'You have no orders to show here',
               ),
             );
           }
           return ListView.builder(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             itemCount: orderedProductsIds.length,
             itemBuilder: (context, index) {
               return FutureBuilder<OrderedProduct>(
                 future: UserDatabaseHelper()
                     .getOrderedProductFromOrder(orderedProductsIds[index]),
                 builder: (context, snapshot) {
-                  
                   if (snapshot.hasData) {
                     final orderedProduct = snapshot.data;
+
+                    print(noOrder);
                     return buildOrderedProductItem(orderedProduct);
                   } else if (snapshot.connectionState ==
                       ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     final error = snapshot.error.toString();
                     Logger().e(error);
                   }
-                  return Icon(
+                  return const Icon(
                     Icons.error,
                     size: 60,
                     color: kTextColor,
@@ -251,18 +280,19 @@ class _HomePageDataState extends State<HomePageData> {
             },
           );
         } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
           final error = snapshot.error;
           Logger().w(error.toString());
         }
-        return Center(
+
+        return const Center(
           child: NothingToShowContainer(
-            iconPath: "assets/icons/network_error.svg",
-            primaryMessage: "Something went wrong",
-            secondaryMessage: "Unable to connect to Database",
+            iconPath: 'assets/icons/network_error.svg',
+            primaryMessage: 'Something went wrong',
+            secondaryMessage: 'Unable to connect to Database',
           ),
         );
       },
@@ -276,36 +306,38 @@ class _HomePageDataState extends State<HomePageData> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final product = snapshot.data;
+
           if (product.owner == EcommerceApp.auth.currentUser.uid) {
             addAddressForCurrentUser(orderedProduct.currentUserUid);
+            noOrder = 'this user has orders';
             return Padding(
-              padding: EdgeInsets.symmetric(vertical: 6),
+              padding: const EdgeInsets.symmetric(vertical: 6),
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       vertical: 12,
                       horizontal: 16,
                     ),
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: kTextColor.withOpacity(0.12),
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(16),
                         topRight: Radius.circular(16),
                       ),
                     ),
                     child: Text.rich(
                       TextSpan(
-                        text: "Ordered on:  ",
-                        style: TextStyle(
+                        text: 'Ordered on:  ',
+                        style: const TextStyle(
                           color: Colors.black,
                           fontSize: 12,
                         ),
                         children: [
                           TextSpan(
                             text: orderedProduct.orderDate,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -314,7 +346,7 @@ class _HomePageDataState extends State<HomePageData> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 4,
                       vertical: 8,
                     ),
@@ -348,11 +380,11 @@ class _HomePageDataState extends State<HomePageData> {
                   ),
                   Container(
                     width: double.infinity,
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 2,
                     ),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: cons.kPrimaryColor,
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(16),
@@ -365,12 +397,13 @@ class _HomePageDataState extends State<HomePageData> {
             );
           }
         } else if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           final error = snapshot.error.toString();
           Logger().e(error);
         }
-        return SizedBox();
+
+        return const SizedBox();
       },
     );
   }
