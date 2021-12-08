@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:e_shop/Seller/Screens/SellerShop/add_location.dart';
 import 'package:e_shop/Seller/Screens/SellerShop/seller_shop.dart';
 import 'package:e_shop/app_properties.dart';
 import 'package:e_shop/config.dart';
@@ -165,7 +166,7 @@ class _CreateShopState extends State<CreateShop>
           ),
         ),
         title: const Text(
-          'New Product',
+          'New Shop',
           style: TextStyle(
             color: Colors.white,
             fontSize: 24,
@@ -218,7 +219,7 @@ class _CreateShopState extends State<CreateShop>
                   color: Colors.deepPurpleAccent,
                 ),
                 controller: _shopName,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Shop Name",
                   hintStyle: TextStyle(
                     color: Colors.deepPurpleAccent,
@@ -228,7 +229,7 @@ class _CreateShopState extends State<CreateShop>
               ),
             ),
           ),
-          Divider(
+          const Divider(
             color: Colors.pink,
           ),
           ListTile(
@@ -243,7 +244,7 @@ class _CreateShopState extends State<CreateShop>
                   color: Colors.deepPurpleAccent,
                 ),
                 controller: _shopOwner,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Owner Name",
                   hintStyle: TextStyle(
                     color: Colors.deepPurpleAccent,
@@ -253,7 +254,7 @@ class _CreateShopState extends State<CreateShop>
               ),
             ),
           ),
-          Divider(
+          const Divider(
             color: Colors.pink,
           ),
           ListTile(
@@ -268,7 +269,7 @@ class _CreateShopState extends State<CreateShop>
                   color: Colors.deepPurpleAccent,
                 ),
                 controller: _email,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "E-mail",
                   hintStyle: TextStyle(
                     color: Colors.deepPurpleAccent,
@@ -278,7 +279,7 @@ class _CreateShopState extends State<CreateShop>
               ),
             ),
           ),
-          Divider(
+          const Divider(
             color: Colors.pink,
           ),
           ListTile(
@@ -294,7 +295,7 @@ class _CreateShopState extends State<CreateShop>
                 ),
                 controller: _adress,
                 keyboardType: TextInputType.text,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Adress",
                   hintStyle: TextStyle(
                     color: Colors.deepPurpleAccent,
@@ -304,7 +305,7 @@ class _CreateShopState extends State<CreateShop>
               ),
             ),
           ),
-          Divider(
+          const Divider(
             color: Colors.pink,
           ),
           ListTile(
@@ -320,7 +321,7 @@ class _CreateShopState extends State<CreateShop>
                 ),
                 controller: _contact,
                 keyboardType: TextInputType.text,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Contact",
                   hintStyle: TextStyle(
                     color: Colors.deepPurpleAccent,
@@ -330,7 +331,7 @@ class _CreateShopState extends State<CreateShop>
               ),
             ),
           ),
-          Divider(
+          const Divider(
             color: Colors.pink,
           ),
           ListTile(
@@ -346,7 +347,7 @@ class _CreateShopState extends State<CreateShop>
                 ),
                 controller: _shopDescription,
                 keyboardType: TextInputType.text,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Shop Description",
                   hintStyle: TextStyle(
                     color: Colors.deepPurpleAccent,
@@ -356,7 +357,7 @@ class _CreateShopState extends State<CreateShop>
               ),
             ),
           ),
-          Divider(
+          const Divider(
             color: Colors.pink,
           ),
         ],
@@ -382,7 +383,12 @@ class _CreateShopState extends State<CreateShop>
     });
 
     String downloadUrl = await uploadItemImage(file);
-    saveItemInfo(downloadUrl);
+    await saveItemInfo(downloadUrl);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AddLocation(),
+      ),
+    );
   }
 
   Future<String> uploadItemImage(mFileImage) async {
@@ -442,13 +448,9 @@ class _CreateShopState extends State<CreateShop>
           }
 
           var doc = snapshot.data.docs;
-          print(snapshot.data.docs.last.data());
+
           // ignore: omit_local_variable_types
           for (int i = 0; i < snapshot.data.docs.length; i++) {
-            print(doc[i]['shopId'].toString());
-            print(doc[i]['Address'].toString());
-            print(
-                EcommerceApp.sharedPreferences.getString(EcommerceApp.userUID));
             if (doc[i]['shopId'].toString() ==
                 EcommerceApp.auth.currentUser.uid.toString()) {
               shopCreated = true;

@@ -143,6 +143,18 @@ class ProductDatabaseHelper {
     return null;
   }
 
+  Future<Product> getShopWithID(String shopId) async {
+    final docSnapshot = await firestore
+        .collection('Shop')
+        .doc(shopId)
+        .get();
+
+    if (docSnapshot.exists) {
+      return Product.fromMap(docSnapshot.data(), id: docSnapshot.id);
+    }
+    return null;
+  }
+
   Future<String> addUsersProduct(Product product) async {
     String uid = AuthentificationService().currentUser.uid;
     final productMap = product.toMap();

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_shop/Buyer/Screens/custom_background.dart';
+import 'package:e_shop/Seller/Screens/SellerShop/edit_location.dart';
 import 'package:e_shop/Seller/Screens/edit_product/edit_product_screen.dart';
 import 'package:e_shop/Seller/Widgets/shop_manage_card.dart';
 import 'package:e_shop/Seller/my_products/my_products_screen.dart';
@@ -23,7 +24,13 @@ class MyShop extends StatelessWidget {
         children: [
           Expanded(
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => EditLocation(),
+                  ),
+                );
+              },
               child: Container(
                 padding: EdgeInsets.all(8),
                 height: 40,
@@ -187,6 +194,7 @@ class MyShop extends StatelessWidget {
         stream: FirebaseFirestore.instance.collection('Shop').snapshots(),
         // ignore: missing_return
         builder: (context, snapshot) {
+          if (snapshot.data == null) return CircularProgressIndicator();
           // ignore: omit_local_variable_types
           for (int i = 0; i < snapshot.data.docs.length; i++) {
             // print(snapshot.data.docs[i]['shopId'].toString() + 'hi');

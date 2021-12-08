@@ -54,70 +54,81 @@ class _ShopPageState extends State<ShopPage>
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
-    Widget profileHeader = Stack(
-      children: [
-        Container(
-          height: height / 3.5,
-          color: Colors.white,
-          child: Column(
+    Widget profileHeader = FutureBuilder(
+        future: ProductDatabaseHelper().getShopWithID(
+          EcommerceApp.sharedPreferences.getString(EcommerceApp.shopProduct),
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.data == null) {
+            Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return Stack(
             children: [
               Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height / 4.5,
-                decoration: BoxDecoration(
-                  color: kYellow,
-                  image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: AssetImage('assets/Store.jpg'),
-                  ),
-                ),
+                height: height / 3.5,
+                color: Colors.white,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    AppBar(
-                      toolbarHeight:
-                          MediaQuery.of(context).padding.top + kToolbarHeight,
-                      elevation: 0,
-                      backgroundColor: Colors.transparent,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height / 4.5,
+                      decoration: BoxDecoration(
+                        color: kYellow,
+                        image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: AssetImage('assets/Store.jpg'),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          AppBar(
+                            toolbarHeight: MediaQuery.of(context).padding.top +
+                                kToolbarHeight,
+                            elevation: 0,
+                            backgroundColor: Colors.transparent,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-        Positioned(
-          top: height / 3.4,
-          left: width / 3,
-          right: width / 3,
-          child: Text(
-            'Khan Store',
-            style: TextStyle(
-                color: Colors.black,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                fontFamily: "Montserrat",
-                fontStyle: FontStyle.italic),
-          ),
-        ),
-        Positioned(
-          right: width / 3,
-          left: width / 3,
-          top: height / 6.2,
-          child: CircleAvatar(
-            backgroundColor: kYellow,
-            radius: 48,
-            child: CircleAvatar(
-              radius: 46,
-              backgroundImage: NetworkImage(
-                EcommerceApp.sharedPreferences
-                    .getString(EcommerceApp.userAvatarUrl),
+              Positioned(
+                top: height / 3.4,
+                left: width / 3,
+                right: width / 3,
+                child: const Text(
+                  'Khan Store',
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Montserrat",
+                      fontStyle: FontStyle.italic),
+                ),
               ),
-            ),
-          ),
-        ),
-      ],
-    );
+              Positioned(
+                right: width / 3,
+                left: width / 3,
+                top: height / 6.2,
+                child: CircleAvatar(
+                  backgroundColor: kYellow,
+                  radius: 48,
+                  child: CircleAvatar(
+                    radius: 46,
+                    backgroundImage: NetworkImage(
+                      EcommerceApp.sharedPreferences
+                          .getString(EcommerceApp.userAvatarUrl),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        });
     Widget rowButtons = Container(
       margin: EdgeInsets.all(8),
       padding: EdgeInsets.symmetric(horizontal: 8),
