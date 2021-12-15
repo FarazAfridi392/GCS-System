@@ -247,6 +247,15 @@ class UserDatabaseHelper {
     return true;
   }
 
+  Future<bool> addComplaint(Complaint complaints) async {
+    
+    final complaintsCollectionReference = firestore
+        
+        .collection(COMPLAINTS_COLLECTION_NAME);
+    await complaintsCollectionReference.add(complaints.toMap());
+    return true;
+  }
+
   Future<bool> updateComplaintForCurrentUser(Complaint complaints) async {
     String uid = AuthentificationService().currentUser.uid;
     final complaintsDocReference = firestore

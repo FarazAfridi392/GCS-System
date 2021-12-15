@@ -412,6 +412,9 @@ class _BodyState extends State<Body> {
                 .map((e) => OrderedProduct(null,
                     currentUserUid: EcommerceApp.sharedPreferences
                         .getString('currentUserId'),
+                    currentUserEmail: EcommerceApp.auth.currentUser.email,
+                    
+                    totalAmount: EcommerceApp.sharedPreferences.getString('cartTotal'),
                     productUid: e,
                     orderDate: formatedDateTime))
                 .toList();

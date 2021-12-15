@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_shop/components/default_button.dart';
 import 'package:e_shop/models/address.dart';
@@ -28,14 +27,9 @@ class _ComplaintDetailsFormState extends State<ComplaintDetailsForm> {
 
   final TextEditingController receiverFieldController = TextEditingController();
 
-  final TextEditingController reason =
-      TextEditingController();
-
-  
+  final TextEditingController reason = TextEditingController();
 
   final TextEditingController address = TextEditingController();
-
-  
 
   final TextEditingController phoneFieldController = TextEditingController();
 
@@ -44,9 +38,9 @@ class _ComplaintDetailsFormState extends State<ComplaintDetailsForm> {
     titleFieldController.dispose();
     receiverFieldController.dispose();
     reason.dispose();
-    
+
     address.dispose();
-    
+
     phoneFieldController.dispose();
     super.dispose();
   }
@@ -66,7 +60,6 @@ class _ComplaintDetailsFormState extends State<ComplaintDetailsForm> {
           SizedBox(height: getProportionateScreenHeight(30)),
           buildAddressLine2Field(),
           SizedBox(height: getProportionateScreenHeight(30)),
-          
           buildPhoneField(),
           SizedBox(height: getProportionateScreenHeight(30)),
           DefaultButton(
@@ -82,9 +75,9 @@ class _ComplaintDetailsFormState extends State<ComplaintDetailsForm> {
       titleFieldController.text = widget.complaintToEdit.title;
       receiverFieldController.text = widget.complaintToEdit.receiver;
       reason.text = widget.complaintToEdit.reason;
-      
+
       address.text = widget.complaintToEdit.address;
-      
+
       phoneFieldController.text = widget.complaintToEdit.phone;
     }
     return form;
@@ -115,8 +108,8 @@ class _ComplaintDetailsFormState extends State<ComplaintDetailsForm> {
       controller: receiverFieldController,
       keyboardType: TextInputType.name,
       decoration: InputDecoration(
-        hintText: "Enter Full Name of Receiver",
-        labelText: "Receiver Name",
+        hintText: "Enter Full Name of Provider",
+        labelText: "Product Provider Name",
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
       validator: (value) {
@@ -167,8 +160,6 @@ class _ComplaintDetailsFormState extends State<ComplaintDetailsForm> {
     );
   }
 
-  
-
   Widget buildPhoneField() {
     return TextFormField(
       controller: phoneFieldController,
@@ -199,7 +190,8 @@ class _ComplaintDetailsFormState extends State<ComplaintDetailsForm> {
       try {
         status =
             await UserDatabaseHelper().addComplaintForCurrentUser(newComplaint);
-            // await UserDatabaseHelper().addComplaint(newComplaint);
+        await UserDatabaseHelper().addComplaint(newComplaint);
+        // await UserDatabaseHelper().addComplaint(newComplaint);
         if (status == true) {
           snackbarMessage = "Complaint saved successfully";
         } else {
@@ -231,8 +223,9 @@ class _ComplaintDetailsFormState extends State<ComplaintDetailsForm> {
       bool status = false;
       String snackbarMessage;
       try {
-        status =
-            await UserDatabaseHelper().updateComplaintForCurrentUser(newComplaint);
+        status = await UserDatabaseHelper()
+            .updateComplaintForCurrentUser(newComplaint);
+            
         if (status == true) {
           snackbarMessage = "Complaint updated successfully";
         } else {
@@ -255,15 +248,16 @@ class _ComplaintDetailsFormState extends State<ComplaintDetailsForm> {
     }
   }
 
-  Complaint generateComplaintObject({String id}) {
+  Complaint generateComplaintObject({String id, }) {
     return Complaint(
       id: id,
       title: titleFieldController.text,
       receiver: receiverFieldController.text,
       reason: reason.text,
       address: address.text,
-      
       phone: phoneFieldController.text,
+      productName: 'Red Nike Cap',
+      productId: 'hQGgtf66yEOS2mvQpYY6',
     );
   }
 }
