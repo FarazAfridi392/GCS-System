@@ -8,18 +8,20 @@ import 'package:e_shop/app_properties.dart';
 import 'package:e_shop/config.dart';
 import 'package:flutter/material.dart';
 
-class Chat extends StatefulWidget {
+class ChatWithSeller extends StatefulWidget {
   final String chatRoomId;
+  final String email;
 
-  Chat({
+  ChatWithSeller({
     this.chatRoomId,
+    this.email,
   });
 
   @override
-  _ChatState createState() => _ChatState();
+  _ChatWithSellerState createState() => _ChatWithSellerState();
 }
 
-class _ChatState extends State<Chat> {
+class _ChatWithSellerState extends State<ChatWithSeller> {
   Stream<QuerySnapshot> chats;
   TextEditingController messageEditingController = new TextEditingController();
 
@@ -31,8 +33,6 @@ class _ChatState extends State<Chat> {
 
     EcommerceApp.sharedPreferences
         .setString('senderEmail', docSnapshot.data()['email']);
-    EcommerceApp.sharedPreferences
-        .setString('senderName', docSnapshot.data()['name']);
   }
 
   Widget chatMessages() {
@@ -58,7 +58,6 @@ class _ChatState extends State<Chat> {
   addMessage() {
     if (messageEditingController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
-        'receiverName': EcommerceApp.sharedPreferences.getString('senderName'),
         "sendBy": EcommerceApp.auth.currentUser.email,
         "message": messageEditingController.text,
         'time': DateTime.now().millisecondsSinceEpoch,
@@ -121,7 +120,7 @@ class _ChatState extends State<Chat> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        EcommerceApp.sharedPreferences.getString('senderName'),
+                        widget.email,
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600),
                       ),

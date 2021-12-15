@@ -1,5 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 import 'package:e_shop/Seller/product_details/product_details_screen.dart';
 import 'package:e_shop/cart/components/checkout_card.dart';
 import 'package:e_shop/components/default_button.dart';
@@ -16,6 +18,7 @@ import 'package:e_shop/services/database/user_database_helper.dart';
 import 'package:e_shop/size_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:logger/logger.dart';
 
@@ -29,6 +32,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   final CartItemsStream cartItemsStream = CartItemsStream();
   PersistentBottomSheetController bottomSheetHandler;
+
   @override
   void initState() {
     super.initState();
@@ -353,89 +357,181 @@ class _BodyState extends State<Body> {
     );
   }
 
-  Future<void> checkoutButtonCallback() async {
-    shutBottomSheet();
-    final confirmation = await showConfirmationDialog(
-      context,
-      "This is just a Project Testing App so, no actual Payment Interface is available.\nDo you want to proceed for Mock Ordering of Products?",
-    );
-    if (confirmation == false) {
-      return;
+  Map<String, dynamic> paymentIntentData;
+  String carTotal = EcommerceApp.sharedPreferences.getString('cartTotal');
+  Future<void> makePayment() async {
+    try {
+      paymentIntentData = await createPaymentIntent(
+          EcommerceApp.sharedPreferences.getString('cartTotal'),
+          'USD'); //json.decode(response.body);
+      // print('Response body==>${response.body.toString()}');
+      await Stripe.instance
+          .initPaymentSheet(
+              paymentSheetParameters: SetupPaymentSheetParameters(
+                  paymentIntentClientSecret: paymentIntentData['client_secret'],
+                  applePay: true,
+                  googlePay: true,
+                  testEnv: true,
+                  style: ThemeMode.dark,
+                  merchantCountryCode: 'US',
+                  merchantDisplayName: 'GCSS'))
+          .then((value) {});
+
+      ///now finally display payment sheeet
+      await displayPaymentSheet();
+    } catch (e, s) {
+      print('exception:$e$s');
     }
-    final orderFuture = UserDatabaseHelper().emptyCart();
-    await EcommerceApp.sharedPreferences
-        .setString('currentUserId', EcommerceApp.auth.currentUser.uid);
+  }
 
-    await orderFuture.then((orderedProductsUid) async {
-      if (orderedProductsUid != null) {
-        print(EcommerceApp.sharedPreferences.getString('currentUserId'));
-        final dateTime = DateTime.now();
-        final formatedDateTime =
-            "${dateTime.day}-${dateTime.month}-${dateTime.year}";
-        // ignore: omit_local_variable_types
-        List<OrderedProduct> orderedProducts = orderedProductsUid
-            .map((e) => OrderedProduct(null,
-                currentUserUid:
-                    EcommerceApp.sharedPreferences.getString('currentUserId'),
-                productUid: e,
-                orderDate: formatedDateTime))
-            .toList();
-        bool addedProductsToMyProducts = false;
-        String snackbarmMessage;
-        try {
-          addedProductsToMyProducts =
-              await UserDatabaseHelper().addToMyOrders(orderedProducts);
-          await UserDatabaseHelper().addToOrdersCollection(orderedProducts);
+  displayPaymentSheet() async {
+    try {
+      await Stripe.instance
+          .presentPaymentSheet(
+              parameters: PresentPaymentSheetParameters(
+        clientSecret: paymentIntentData['client_secret'],
+        confirmPayment: true,
+      ))
+          .then((newValue) async {
+        print('payment intent' + paymentIntentData['id'].toString());
+        print('payment intent' + paymentIntentData['client_secret'].toString());
+        print('payment intent' + paymentIntentData['amount'].toString());
+        print('payment intent' + paymentIntentData.toString());
+        final orderFuture = UserDatabaseHelper().emptyCart();
+        await EcommerceApp.sharedPreferences
+            .setString('currentUserId', EcommerceApp.auth.currentUser.uid);
 
-          if (addedProductsToMyProducts) {
-            snackbarmMessage = "Products ordered Successfully";
+        await orderFuture.then((orderedProductsUid) async {
+          if (orderedProductsUid != null) {
+            print(EcommerceApp.sharedPreferences.getString('currentUserId'));
+            final dateTime = DateTime.now();
+            final formatedDateTime =
+                "${dateTime.day}-${dateTime.month}-${dateTime.year}";
+            // ignore: omit_local_variable_types
+            List<OrderedProduct> orderedProducts = orderedProductsUid
+                .map((e) => OrderedProduct(null,
+                    currentUserUid: EcommerceApp.sharedPreferences
+                        .getString('currentUserId'),
+                    productUid: e,
+                    orderDate: formatedDateTime))
+                .toList();
+            bool addedProductsToMyProducts = false;
+            String snackbarmMessage;
+            try {
+              addedProductsToMyProducts =
+                  await UserDatabaseHelper().addToMyOrders(orderedProducts);
+              await UserDatabaseHelper().addToOrdersCollection(orderedProducts);
+
+              if (addedProductsToMyProducts) {
+                snackbarmMessage = "Products ordered Successfully";
+              } else {
+                throw "Could not order products due to unknown issue";
+              }
+            } on FirebaseException catch (e) {
+              Logger().e(e.toString());
+              snackbarmMessage = e.toString();
+            } catch (e) {
+              Logger().e(e.toString());
+              snackbarmMessage = e.toString();
+            } finally {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(snackbarmMessage ?? "Something went wrong"),
+                ),
+              );
+            }
           } else {
-            throw "Could not order products due to unknown issue";
+            throw "Something went wrong while clearing cart";
           }
-        } on FirebaseException catch (e) {
+          await showDialog(
+            context: context,
+            builder: (context) {
+              return FutureProgressDialog(
+                orderFuture,
+                message: Text("Placing the Order"),
+              );
+            },
+          );
+        }).catchError((e) {
           Logger().e(e.toString());
-          snackbarmMessage = e.toString();
-        } catch (e) {
-          Logger().e(e.toString());
-          snackbarmMessage = e.toString();
-        } finally {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(snackbarmMessage ?? "Something went wrong"),
+              // ignore: prefer_const_constructors
+              content: Text("Something went wrong"),
             ),
           );
-        }
-      } else {
-        throw "Something went wrong while clearing cart";
-      }
-      await showDialog(
-        context: context,
-        builder: (context) {
-          return FutureProgressDialog(
-            orderFuture,
-            message: Text("Placing the Order"),
-          );
-        },
-      );
-    }).catchError((e) {
-      Logger().e(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          // ignore: prefer_const_constructors
-          content: Text("Something went wrong"),
-        ),
-      );
-    });
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return FutureProgressDialog(
-          orderFuture,
-          message: Text("Placing the Order"),
+        });
+        await showDialog(
+          context: context,
+          builder: (context) {
+            return FutureProgressDialog(
+              orderFuture,
+              message: Text("Placing the Order"),
+            );
+          },
         );
-      },
-    );
-    await refreshPage();
+        await refreshPage();
+        //orderPlaceApi(paymentIntentData!['id'].toString());
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("paid successfully")));
+        // submitbooking();
+        //  addorder();
+
+        paymentIntentData = null;
+      }).onError((error, stackTrace) {
+        print('Exception/DISPLAYPAYMENTSHEET==> $error $stackTrace');
+      });
+    } on StripeException catch (e) {
+      print('Exception/DISPLAYPAYMENTSHEET==> $e');
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+                content: Text("Cancelled "),
+              ));
+    } catch (e) {
+      print('$e');
+    }
+  }
+
+  //  Future<Map<String, dynamic>>
+  createPaymentIntent(String amount, String currency) async {
+    try {
+      Map<String, dynamic> body = {
+        'amount': calculateAmount('$amount'),
+        'currency': currency,
+        'payment_method_types[]': 'card'
+      };
+      print(body);
+      var response = await http.post(
+          Uri.parse('https://api.stripe.com/v1/payment_intents'),
+          body: body,
+          headers: {
+            'Authorization':
+                'Bearer sk_test_51K5aTJC5wLHiKHnFdryg0NV9Wmk6NoG6CR6tjiNr1a74jNhzp89NrBhZU154hXVjzFo5jEYd4RxMZ6ULZb3Ybms100eIBFtBBS',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          });
+      print('Create Intent reponse ===> ${response.body.toString()}');
+      return jsonDecode(response.body);
+    } catch (err) {
+      print('err charging user: ${err.toString()}');
+    }
+  }
+
+  calculateAmount(String amount) {
+    final a = (int.parse(amount)) * 100;
+    return a.toString();
+  }
+
+  Future<void> checkoutButtonCallback() async {
+    await makePayment();
+    shutBottomSheet();
+    // final confirmation = await showConfirmationDialog(
+    //   context,
+    //   "This is just a Project Testing App so, no actual Payment Interface is available.\nDo you want to proceed for Mock Ordering of Products?",
+    // );
+    // if (confirmation == false) {
+    //   return;
+    // }
   }
 
   void shutBottomSheet() {

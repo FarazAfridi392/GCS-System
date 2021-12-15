@@ -73,12 +73,12 @@ class _AddLocationState extends State<AddLocation> {
               height: 500,
               child: GoogleMap(
                 onTap: (tapped) async {
-                  lat = tapped.latitude;
-                  lang = tapped.longitude;
                   final coordinated =
                       new geoCo.Coordinates(tapped.latitude, tapped.longitude);
                   var address = await geoCo.Geocoder.local
                       .findAddressesFromCoordinates(coordinated);
+                  lat = tapped.latitude;
+                  lang = tapped.longitude;
                   var firstAddress = address.first;
 
                   getMarkers(tapped.latitude, tapped.longitude);
@@ -122,10 +122,14 @@ class _AddLocationState extends State<AddLocation> {
                 var address = await geoCo.Geocoder.local
                     .findAddressesFromCoordinates(coordinated);
                 var firstAddress = address.first;
-                getMarkers(lang, lang);
+                getMarkers(lat, lang);
                 final itemsRef = FirebaseFirestore.instance.collection("Shop");
-                await itemsRef.doc(shopId).collection('location').doc(shopId).set({
-                  'latitude': lang,
+                await itemsRef
+                    .doc(shopId)
+                    .collection('location')
+                    .doc(shopId)
+                    .set({
+                  'latitude': lat,
                   'longitude': lang,
                   'Address': firstAddress.addressLine,
                   'Country': firstAddress.countryName,

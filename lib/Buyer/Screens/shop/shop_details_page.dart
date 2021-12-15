@@ -2,6 +2,21 @@ import 'package:e_shop/app_properties.dart';
 import 'package:flutter/material.dart';
 
 class ShopDetailsPage extends StatelessWidget {
+  String shopName;
+  String ownerName;
+  String ownerEmail;
+  String shopAdress;
+  String contactNumber;
+  String dateCreated;
+  String shopDescription;
+  ShopDetailsPage(
+      {this.shopName,
+      this.ownerName,
+      this.ownerEmail,
+      this.shopAdress,
+      this.contactNumber,
+      this.dateCreated,
+      this.shopDescription});
   @override
   Widget build(BuildContext context) {
     Widget horizontalLine = Padding(
@@ -29,7 +44,7 @@ class ShopDetailsPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Shop Name: Khan Store',
+                      'Shop Name: $shopName',
                       style: kOrderCodeTextStyle,
                     ),
                   ),
@@ -37,7 +52,7 @@ class ShopDetailsPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Owner Name: Hanzla Ahmed',
+                      'Owner Name: $ownerName',
                       style: kOrderCodeTextStyle,
                     ),
                   ),
@@ -45,7 +60,7 @@ class ShopDetailsPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Email : owner@example.com',
+                      'Email : $ownerEmail',
                       style: kCommonTextStyle,
                     ),
                   ),
@@ -53,7 +68,7 @@ class ShopDetailsPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Address : Shop # 30, Kamal Plaza, Islamabad',
+                      'Address : $shopAdress',
                       style: kCommonTextStyle,
                     ),
                   ),
@@ -61,7 +76,7 @@ class ShopDetailsPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Contact : 0313 4534567',
+                      'Contact : $contactNumber',
                       style: kCommonTextStyle,
                     ),
                   ),
@@ -69,7 +84,7 @@ class ShopDetailsPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Date Created : 5-27-2021',
+                      'Date Created : $dateCreated',
                       style: kCommonTextStyle,
                     ),
                   ),
@@ -77,7 +92,7 @@ class ShopDetailsPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                      'Shop Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+                      'Shop Description: $shopDescription',
                       style: kCommonTextStyle,
                     ),
                   ),

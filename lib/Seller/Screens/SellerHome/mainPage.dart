@@ -60,7 +60,7 @@ class _SellerHomeState extends State<SellerHome>
                 ),
               ),
             ),
-            ChatPage(),
+            ChatRoom(),
             SellerProfile(),
           ],
         ),

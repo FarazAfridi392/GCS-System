@@ -1,4 +1,4 @@
-
+import 'package:e_shop/Seller/edit_complaint/edit_complaint_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -213,11 +213,9 @@ class _BodyState extends State<Body> {
                   ),
                   decoration: BoxDecoration(
                     color: kPrimaryColor,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(16),
-                      bottomRight: Radius.circular(16),
-                    ),
+                    borderRadius: BorderRadius.only(),
                   ),
+                  // ignore: deprecated_member_use
                   child: FlatButton(
                     onPressed: () async {
                       String currentUserUid =
@@ -225,7 +223,8 @@ class _BodyState extends State<Body> {
                       Review prevReview;
                       try {
                         prevReview = (await ProductDatabaseHelper()
-                            .getProductReviewWithID(product.id, currentUserUid)) as Review ;
+                            .getProductReviewWithID(
+                                product.id, currentUserUid)) as Review;
                       } on FirebaseException catch (e) {
                         Logger().w("Firebase Exception: $e");
                       } catch (e) {
@@ -276,8 +275,40 @@ class _BodyState extends State<Body> {
                       }
                       await refreshPage();
                     },
-                    child: Text(
-                      "Give Product Review",
+                    child: const Text(
+                      'Give Product Review',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(16),
+                      bottomRight: Radius.circular(16),
+                    ),
+                  ),
+                  child: FlatButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditComplaintScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      'Return Product',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,

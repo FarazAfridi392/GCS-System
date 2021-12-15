@@ -24,7 +24,7 @@ class _CreateShopState extends State<CreateShop>
   TextEditingController _shopName = TextEditingController();
   TextEditingController _shopOwner = TextEditingController();
   TextEditingController _adress = TextEditingController();
-  TextEditingController _email = TextEditingController();
+
   TextEditingController _contact = TextEditingController();
   TextEditingController _shopDescription = TextEditingController();
   bool shopCreated = false;
@@ -268,31 +268,6 @@ class _CreateShopState extends State<CreateShop>
                 style: TextStyle(
                   color: Colors.deepPurpleAccent,
                 ),
-                controller: _email,
-                decoration: const InputDecoration(
-                  hintText: "E-mail",
-                  hintStyle: TextStyle(
-                    color: Colors.deepPurpleAccent,
-                  ),
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const Divider(
-            color: Colors.pink,
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.perm_device_information,
-              color: Colors.pink,
-            ),
-            title: Container(
-              width: 250,
-              child: TextField(
-                style: TextStyle(
-                  color: Colors.deepPurpleAccent,
-                ),
                 controller: _adress,
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
@@ -370,7 +345,7 @@ class _CreateShopState extends State<CreateShop>
       file = null;
       _shopName.clear();
       _shopOwner.clear();
-      _email.clear();
+
       _adress.clear();
       _contact.clear();
       _shopDescription.clear();
@@ -408,17 +383,20 @@ class _CreateShopState extends State<CreateShop>
 
   saveItemInfo(String downUrl) {
     final itemsRef = FirebaseFirestore.instance.collection("Shop");
+    final dateTime = DateTime.now();
+    final formatedDateTime =
+        "${dateTime.day}-${dateTime.month}-${dateTime.year}";
     itemsRef.doc(shopId).set({
       'shopId': shopId.toString(),
-      "Email": _email.text.trim(),
+      "Email": EcommerceApp.auth.currentUser.email,
       "ShopName": _shopName.text.trim(),
       "ShopOwner": _shopOwner.text,
-      "Date Created": DateTime.now(),
+      "Date_Created": formatedDateTime,
       "status": "available",
       "thumbnailUrl": downUrl,
       "Address": _adress.text.trim(),
       "Contact": _contact.text.trim(),
-      "Shop Description": _shopDescription.text.trim(),
+      "Shop_Description": _shopDescription.text.trim(),
     });
 
     setState(() {
@@ -427,7 +405,7 @@ class _CreateShopState extends State<CreateShop>
       shopId = DateTime.now().millisecondsSinceEpoch.toString();
       _shopName.clear();
       _adress.clear();
-      _email.clear();
+
       _shopOwner.clear();
     });
   }

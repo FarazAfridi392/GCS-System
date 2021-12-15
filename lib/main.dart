@@ -15,9 +15,13 @@ import 'Buyer/Counters/cartitemcounter.dart';
 import 'Buyer/Counters/changeAddresss.dart';
 import 'Buyer/Counters/totalMoney.dart';
 import 'app_properties.dart';
-
+import 'package:flutter_stripe/flutter_stripe.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+    Stripe.publishableKey =
+      'pk_test_51K5aTJC5wLHiKHnFHVkVUfBrIqsbHbERjNvXbxy4ArOiH0UE4ClpYrKdaVY7ayLTvrlMiru2rw2T4XIyWtFfoqIw00BTjku56s';
+
+  await Stripe.instance.applySettings();
   await Firebase.initializeApp();
   EcommerceApp.auth = FirebaseAuth.instance;
   EcommerceApp.sharedPreferences = await SharedPreferences.getInstance();

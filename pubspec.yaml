@@ -40,6 +40,9 @@ dependencies:
   string_validator: ^0.3.0
   swipedetector: ^1.2.0
   pinch_zoom_image_updated: ^0.2.6
+  intl: ^0.17.0
+
+  flutter_stripe:
 
 
 dev_dependencies:

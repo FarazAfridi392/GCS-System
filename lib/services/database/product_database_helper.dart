@@ -143,14 +143,25 @@ class ProductDatabaseHelper {
     return null;
   }
 
-  Future<Product> getShopWithID(String shopId) async {
+  Future<Map<String, dynamic>> getShopWithID(String shopId) async {
+    final docSnapshot = await firestore.collection('Shop').doc(shopId).get();
+
+    if (docSnapshot.exists) {
+      return docSnapshot.data();
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>> getShopLocationWithID(String shopId) async {
     final docSnapshot = await firestore
         .collection('Shop')
+        .doc(shopId)
+        .collection('location')
         .doc(shopId)
         .get();
 
     if (docSnapshot.exists) {
-      return Product.fromMap(docSnapshot.data(), id: docSnapshot.id);
+      return docSnapshot.data();
     }
     return null;
   }

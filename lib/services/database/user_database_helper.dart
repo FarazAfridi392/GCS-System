@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:e_shop/models/CartItem.dart';
 import 'package:e_shop/models/address.dart';
+import 'package:e_shop/models/complaints.dart';
 import 'package:e_shop/models/orderedProduct.dart';
 import 'package:e_shop/services/authentification/authentification_service.dart';
 import 'package:e_shop/services/database/product_database_helper.dart';
@@ -9,6 +10,8 @@ import 'package:e_shop/services/database/product_database_helper.dart';
 class UserDatabaseHelper {
   static const String USERS_COLLECTION_NAME = "buyers";
   static const String ADDRESSES_COLLECTION_NAME = "addresses";
+  static const String COMPLAINTS_COLLECTION_NAME = "complaints";
+
   static const String CART_COLLECTION_NAME = "cart";
   static const String ORDERED_PRODUCTS_COLLECTION_NAME = "ordered_products";
 
@@ -117,6 +120,21 @@ class UserDatabaseHelper {
     return addresses;
   }
 
+  Future<List<String>> get complaintsList async {
+    String uid = AuthentificationService().currentUser.uid;
+    final snapshot = await firestore
+        .collection(USERS_COLLECTION_NAME)
+        .doc(uid)
+        .collection(COMPLAINTS_COLLECTION_NAME)
+        .get();
+    final complaints = List<String>();
+    snapshot.docs.forEach((doc) {
+      complaints.add(doc.id);
+    });
+
+    return complaints;
+  }
+
   Future<List<String>> addressesListofOrderer(String uid) async {
     final snapshot = await firestore
         .collection(USERS_COLLECTION_NAME)
@@ -204,6 +222,50 @@ class UserDatabaseHelper {
         .collection(ADDRESSES_COLLECTION_NAME)
         .doc(address.id);
     await addressDocReference.update(address.toMap());
+    return true;
+  }
+
+  Future<Complaint> getComplaintFromId(String id) async {
+    String uid = AuthentificationService().currentUser.uid;
+    final doc = await firestore
+        .collection(USERS_COLLECTION_NAME)
+        .doc(uid)
+        .collection(COMPLAINTS_COLLECTION_NAME)
+        .doc(id)
+        .get();
+    final complaints = Complaint.fromMap(doc.data(), id: doc.id);
+    return complaints;
+  }
+
+  Future<bool> addComplaintForCurrentUser(Complaint complaints) async {
+    String uid = AuthentificationService().currentUser.uid;
+    final complaintsCollectionReference = firestore
+        .collection(USERS_COLLECTION_NAME)
+        .doc(uid)
+        .collection(COMPLAINTS_COLLECTION_NAME);
+    await complaintsCollectionReference.add(complaints.toMap());
+    return true;
+  }
+
+  Future<bool> updateComplaintForCurrentUser(Complaint complaints) async {
+    String uid = AuthentificationService().currentUser.uid;
+    final complaintsDocReference = firestore
+        .collection(USERS_COLLECTION_NAME)
+        .doc(uid)
+        .collection(COMPLAINTS_COLLECTION_NAME)
+        .doc(complaints.id);
+    await complaintsDocReference.update(complaints.toMap());
+    return true;
+  }
+
+  Future<bool> deleteComplaintForCurrentUser(String id) async {
+    String uid = AuthentificationService().currentUser.uid;
+    final complaintsDocReference = firestore
+        .collection(USERS_COLLECTION_NAME)
+        .doc(uid)
+        .collection(COMPLAINTS_COLLECTION_NAME)
+        .doc(id);
+    await complaintsDocReference.delete();
     return true;
   }
 

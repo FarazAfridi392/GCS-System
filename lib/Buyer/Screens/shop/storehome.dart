@@ -239,7 +239,7 @@ class _StoreHomeState extends State<StoreHome>
             // ),
             HomeScreen(),
 
-            ChatPage(),
+            ChatRoom(),
             ProfilePage()
           ],
         ),

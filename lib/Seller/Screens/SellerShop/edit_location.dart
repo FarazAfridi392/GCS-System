@@ -70,19 +70,18 @@ class _EditLocationState extends State<EditLocation> {
       body: Container(
         child: Center(
           child: Column(
-            
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
                 height: 500,
                 child: GoogleMap(
                   onTap: (tapped) async {
-                    lat = tapped.latitude;
-                    lang = tapped.longitude;
-                    final coordinated =
-                        new geoCo.Coordinates(tapped.latitude, tapped.longitude);
+                    final coordinated = new geoCo.Coordinates(
+                        tapped.latitude, tapped.longitude);
                     var address = await geoCo.Geocoder.local
                         .findAddressesFromCoordinates(coordinated);
+                    lat = tapped.latitude;
+                    lang = tapped.longitude;
                     var firstAddress = address.first;
 
                     getMarkers(tapped.latitude, tapped.longitude);
@@ -126,14 +125,25 @@ class _EditLocationState extends State<EditLocation> {
                   var address = await geoCo.Geocoder.local
                       .findAddressesFromCoordinates(coordinated);
                   var firstAddress = address.first;
-                  getMarkers(lang, lang);
-                  final itemsRef = FirebaseFirestore.instance.collection("Shop");
+                  getMarkers(lat, lang);
+                  final itemsRef =
+                      FirebaseFirestore.instance.collection('Shop');
+                  if (itemsRef
+                          .doc(shopId)
+                          .collection('location')
+                          .doc(shopId)
+                          .snapshots() ==
+                      null) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
                   await itemsRef
                       .doc(shopId)
                       .collection('location')
                       .doc(shopId)
                       .set({
-                    'latitude': lang,
+                    'latitude': lat,
                     'longitude': lang,
                     'Address': firstAddress.addressLine,
                     'Country': firstAddress.countryName,

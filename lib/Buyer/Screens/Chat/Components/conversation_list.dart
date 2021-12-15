@@ -25,7 +25,7 @@ class _ConversationListState extends State<ConversationList> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ChatDetailPage(),
+            builder: (_) =>Chat(),
           ),
         );
       },

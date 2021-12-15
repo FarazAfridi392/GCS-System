@@ -1,5 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_shop/Buyer/Screens/Authentication/login.dart';
+import 'package:e_shop/Buyer/Screens/Chat/chat_detail_page.dart';
+import 'package:e_shop/Buyer/Screens/Chat/helper/constants.dart';
+import 'package:e_shop/Buyer/Screens/Chat/services/database.dart';
 import 'package:e_shop/Buyer/Screens/shop/shop_details_page.dart';
+import 'package:e_shop/Buyer/Screens/shop/shop_location.dart';
 import 'package:e_shop/Buyer/Screens/shop/shop_product/components/item_card.dart';
 import 'package:e_shop/Buyer/Screens/shop/shop_product/home_screen.dart';
 import 'package:e_shop/Buyer/Screens/shop/shop_reviews_page.dart';
@@ -34,6 +39,14 @@ class _ShopPageState extends State<ShopPage>
   TabController controller;
   final UsersProductsStream usersProductsStream = UsersProductsStream();
   final AllProductsStream allProductsStream = AllProductsStream();
+  String shopName;
+  String ownerName;
+  String ownerEmail;
+  String shopAdress;
+  String contactNumber;
+  String dateCreated;
+  String shopDescription;
+  DatabaseMethods databaseMethods = new DatabaseMethods();
 
   @override
   void initState() {
@@ -54,75 +67,125 @@ class _ShopPageState extends State<ShopPage>
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
+    Future getUserWithID(String userId) async {
+      final docSnapshot = await FirebaseFirestore.instance
+          .collection('sellers')
+          .doc(userId)
+          .get();
+
+      EcommerceApp.sharedPreferences
+          .setString('senderEmail', docSnapshot.data()['email']);
+    }
+
+    getChatRoomId(String a, String b) {
+      if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+        return "$b\_$a";
+      } else {
+        return "$a\_$b";
+      }
+    }
+
+    sendMessage(String userName) {
+      List<String> users = [EcommerceApp.auth.currentUser.email, userName];
+
+      String chatRoomId =
+          getChatRoomId(EcommerceApp.auth.currentUser.email, userName);
+
+      Map<String, dynamic> chatRoom = {
+        "users": users,
+        "chatRoomId": chatRoomId,
+      };
+
+      databaseMethods.addChatRoom(chatRoom, chatRoomId);
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Chat(
+                    
+                    chatRoomId: chatRoomId,
+                  )));
+    }
+
     Widget profileHeader = FutureBuilder(
         future: ProductDatabaseHelper().getShopWithID(
           EcommerceApp.sharedPreferences.getString(EcommerceApp.shopProduct),
         ),
         builder: (context, snapshot) {
           if (snapshot.data == null) {
-            Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
-          return Stack(
+          shopName = snapshot.data['ShopName'];
+          ownerName = snapshot.data['ShopOwner'];
+          ownerEmail = snapshot.data['Email'];
+          shopAdress = snapshot.data['Address'];
+          contactNumber = snapshot.data['Contact'];
+          dateCreated = snapshot.data['Date Created'];
+          shopDescription = snapshot.data['Shop Description'];
+          return Column(
             children: [
-              Container(
-                height: height / 3.5,
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height / 4.5,
-                      decoration: BoxDecoration(
-                        color: kYellow,
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: AssetImage('assets/Store.jpg'),
+              Stack(
+                children: [
+                  Container(
+                    height: height / 3.4,
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height / 4.5,
+                          decoration: BoxDecoration(
+                            color: kYellow,
+                            image: DecorationImage(
+                              fit: BoxFit.fill,
+                              image:
+                                  NetworkImage(snapshot.data['thumbnailUrl']),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              AppBar(
+                                toolbarHeight:
+                                    MediaQuery.of(context).padding.top +
+                                        kToolbarHeight,
+                                elevation: 0,
+                                backgroundColor: Colors.transparent,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    right: width / 3,
+                    left: width / 3,
+                    top: height / 6.2,
+                    child: CircleAvatar(
+                      backgroundColor: kYellow,
+                      radius: 48,
+                      child: CircleAvatar(
+                        radius: 46,
+                        backgroundImage: NetworkImage(
+                          EcommerceApp.sharedPreferences
+                              .getString(EcommerceApp.userAvatarUrl),
                         ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          AppBar(
-                            toolbarHeight: MediaQuery.of(context).padding.top +
-                                kToolbarHeight,
-                            elevation: 0,
-                            backgroundColor: Colors.transparent,
-                          ),
-                        ],
-                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Positioned(
-                top: height / 3.4,
-                left: width / 3,
-                right: width / 3,
-                child: const Text(
-                  'Khan Store',
+              Center(
+                child: Text(
+                  snapshot.data['ShopName'],
                   style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Montserrat",
-                      fontStyle: FontStyle.italic),
-                ),
-              ),
-              Positioned(
-                right: width / 3,
-                left: width / 3,
-                top: height / 6.2,
-                child: CircleAvatar(
-                  backgroundColor: kYellow,
-                  radius: 48,
-                  child: CircleAvatar(
-                    radius: 46,
-                    backgroundImage: NetworkImage(
-                      EcommerceApp.sharedPreferences
-                          .getString(EcommerceApp.userAvatarUrl),
-                    ),
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Montserrat",
                   ),
                 ),
               ),
@@ -136,7 +199,15 @@ class _ShopPageState extends State<ShopPage>
         children: [
           Expanded(
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ShopLocation(
+                      shopName: shopName,
+                    ),
+                  ),
+                );
+              },
               child: Container(
                 padding: EdgeInsets.only(left: 25),
                 height: 40,
@@ -167,7 +238,11 @@ class _ShopPageState extends State<ShopPage>
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                
+                sendMessage(EcommerceApp.sharedPreferences
+                    .getString('senderEmail'));
+              },
               child: Container(
                 padding: EdgeInsets.only(left: 25),
                 height: 40,
@@ -197,7 +272,29 @@ class _ShopPageState extends State<ShopPage>
             width: 14,
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              return showDialog(
+                context: context,
+                builder: (context) {
+                  return SimpleDialog(
+                    backgroundColor: Colors.transparent,
+                    title: Column(
+                      children: [
+                        ShopDetailsPage(
+                            shopName: shopName,
+                            ownerName: ownerName,
+                            ownerEmail: ownerEmail,
+                            shopAdress: shopAdress,
+                            dateCreated: dateCreated,
+                            contactNumber: contactNumber,
+                            shopDescription: shopDescription),
+                      ],
+                    ),
+                    titlePadding: EdgeInsets.zero,
+                  );
+                },
+              );
+            },
             child: Container(
               padding: EdgeInsets.all(8),
               height: 40,

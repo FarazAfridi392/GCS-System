@@ -1,4 +1,5 @@
 import 'package:e_shop/components/default_button.dart';
+import 'package:e_shop/config.dart';
 import 'package:e_shop/services/database/user_database_helper.dart';
 import 'package:flutter/material.dart';
 
@@ -45,6 +46,11 @@ class CheckoutCard extends StatelessWidget {
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       final cartTotal = snapshot.data;
+                      final cartTotal1 = cartTotal / 176;
+                      EcommerceApp.sharedPreferences
+                          .setString('cartTotal', cartTotal1.toStringAsFixed(0));
+                      print(EcommerceApp.sharedPreferences
+                          .getString('cartTotal'));
                       return Text.rich(
                         TextSpan(text: "Total\n", children: [
                           TextSpan(
